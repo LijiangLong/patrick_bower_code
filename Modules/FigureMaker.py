@@ -1,5 +1,5 @@
 from Modules.LogParser import LogParser as LP
-from Modules.DepthAnalyzer import DepthAnalyzer as DA
+from Modules.DataObjects.DepthAnalyzer import DepthAnalyzer as DA
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
@@ -29,7 +29,7 @@ class FigureMaker:
 		gridHourly = plt.GridSpec(self.lp.numDays, int(24/hourlyDelta) + 2, wspace=0.02, hspace=0.02)
 
 		start_day = self.lp.frames[0].time.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
-		totalChangeData = self.da_obj.returnVolumeSummary(self.lp.frames[0].time, self.lp.frames[-1].time)
+		totalChangeData = vars(self.da_obj.returnVolumeSummary(self.lp.frames[0].time, self.lp.frames[-1].time))
 
 		# Show picture of final depth
 		topAx1 = figDaily.add_subplot(gridDaily[0:2, 0:self.lp.numDays*1-1])
