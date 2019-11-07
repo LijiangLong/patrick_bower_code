@@ -2,12 +2,10 @@ import os, subprocess, pdb
 
 
 class MLFileManager():
-	def __init__(self):
-		self.rcloneRemote = 'cichlidVideo'
-		self.videoMLGithub = 'https://github.com/ptmcgrat/3D-Resnets'
-
-		self.cloudMasterDir = self.rcloneRemote + ':McGrath/Apps/CichlidPiData/__MachineLearningModels/'
-		self.localMasterDir = os.getenv('HOME') + '/' + 'Temp/CichlidAnalyzer/__MachineLearningModels/'
+	def __init__(self, localMasterDir, cloudMasterDir):
+		self.analysisDir = '__MachineLearningModels/'
+		self.localMasterDir = localMasterDir + self.analysisDir
+		self.cloudMasterDir = cloudMasterDir + self.analysisDir
 
 	def _createFileDirectoryNames(self):
 		self.videoModelsDir = 'VideoModels/'

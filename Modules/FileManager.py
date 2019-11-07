@@ -1,6 +1,7 @@
 import os, subprocess, pdb
 from Modules.AnFileManager import AnFileManager as AnFM
 from Modules.ProjFileManager import ProjFileManager as ProjFM
+from Modules.mlFileManager import MLFileManager as MLFM
 
 class FileManager():
 	def __init__(self):
@@ -20,6 +21,9 @@ class FileManager():
 
 	def retProjFileManager(self, projectID):
 		return ProjFM(self.localMasterDir, self.cloudMasterDir, projectID)
+
+	def retMLFileManager(self):
+		return MLFM(self.localMasterDir, self.cloudMasterDir)
 
 	def _identifyPiDirectory(self):
 		writableDirs = []
