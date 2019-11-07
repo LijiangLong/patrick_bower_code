@@ -17,7 +17,6 @@ class AllVideosPreparer():
 		self.anFileManager = self.fileManager.retAnFileManager()
 		self.projFileManager = self.fileManager.retProjFileManager(projectID)
 		self.mlFileManager = self.fileManager.retMLFileManager()
-		self.lp = LP(self.projFileManager.localLogfile)
 
 	def __del__(self):
 		pass
@@ -33,10 +32,14 @@ class AllVideosPreparer():
 	def prepareAllClusterData(self):
 		self.anFileManager._createDirectory('')
 		self.projFileManager.prepareClusterAnalysis()
+		self.lp = LP(self.projFileManager.localLogfile)
+
 
 	def prepareAllMLData(self):
 		self.anFileManager._createDirectory('')
 		self.projFileManager.prepareMLAnalysis()
+		self.lp = LP(self.projFileManager.localLogfile)
+
 
 	def backupClusterData(self):
 		self.projFileManager.backupClusterAnalysis()
