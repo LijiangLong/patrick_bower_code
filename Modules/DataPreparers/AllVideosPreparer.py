@@ -30,13 +30,11 @@ class AllVideosPreparer():
 
 
 	def prepareAllClusterData(self):
-		self.anFileManager._createDirectory('')
 		self.projFileManager.prepareClusterAnalysis()
 		self.lp = LP(self.projFileManager.localLogfile)
 
 
 	def prepareAllMLData(self):
-		self.anFileManager._createDirectory('')
 		self.projFileManager.prepareMLAnalysis()
 		self.lp = LP(self.projFileManager.localLogfile)
 
