@@ -16,13 +16,16 @@ prepParser = subparsers.add_parser('ManualPrep', help='This command takes user i
 prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
 prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
 
-prepParser = subparsers.add_parser('ManualPrep', help='This command takes user interaction to identify depth crops, RGB crops, and register images')
-prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
-prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
-
 depthParser = subparsers.add_parser('DepthPreparer', help='This command takes prepares the depth data for downstream analysis')
 depthParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
 depthParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
+
+prepParser = subparsers.add_parser('VideoPreparer', help='This command takes prepares the video data for downstream analysis')
+prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
+prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
+prepParser.add_argument('-c', '--Cluster', action = 'store_true', help = 'Use this flag if you only want to analyze clusters')
+prepParser.add_argument('-m', '--MachineLearning', action = 'store_true', help = 'Use this flag if you only want to perform machine learning analysis')
+
 
 args = parser.parse_args()
 
