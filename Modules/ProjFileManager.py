@@ -40,14 +40,12 @@ class ProjFileManager():
 		self._uploadDirectory(self.troubleshootingDir)
 
 	def prepareClusterAnalysis(self):
-		self._createDirectory(self.localMasterDir)
 		self._createDirectory(self.localTroubleshootingDir)
 		self._createDirectory(self.localFigureDir)
 		self._createDirectory(self.localTempDir)
 		self._createDirectory(self.localAllClipsDir)
 		self._createDirectory(self.localManualLabelClipsDir)
 		self._createDirectory(self.localManualLabelFramesDir)
-		self._createDirectory(self.localAnalysisDir)
 
 		self._downloadFile(self.logfile)
 		self._downloadDirectory(self.videoDir)
@@ -184,36 +182,6 @@ class ProjFileManager():
 		# Manual Label Frame 
 		self.nManualLabelFrames = 200
 
-	def _identifyPiDirectory(self):
-		writableDirs = []
-		try:
-			possibleDirs = os.listdir('/media/pi')
-		except FileNotFoundError:
-			return
-
-		for d in possibleDirs:
-
-			try:
-				with open('/media/pi/' + d + '/temp.txt', 'w') as f:
-					print('Test', file = f)
-				with open('/media/pi/' + d + '/temp.txt', 'r') as f:
-					for line in f:
-						if 'Test' in line:
-							writableDirs.append(d)
-			except:
-				pass
-			try:
-				os.remove('/media/pi/' + d + '/temp.txt')
-			except FileNotFoundError:
-				continue
-		
-		if len(writableDirs) == 1:
-			self.localMasterDir = '/media/pi/' + d + '/' + self.projectID + '/'
-			self.system = 'pi'
-		elif len(writableDirs) == 0:
-			raise Exception('No writable drives in /media/pi/')
-		else:
-			raise Exception('Multiple writable drives in /media/pi/. Options are: ' + str(writableDirs))
 
 	def _createDirectory(self, directory):
 		if not os.path.exists(directory):
