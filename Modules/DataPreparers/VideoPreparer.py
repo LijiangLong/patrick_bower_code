@@ -16,16 +16,16 @@ class VideoPreparer:
 	# 3. Automatically identifies bower location
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
-	def __init__(self, fileManager, index, workers):
-		self.fileManager = fileManager
-		self.lp = LP(self.fileManager.localLogfile)
+	def __init__(self, projFileManager, index, workers):
+		self.projFileManager = FileManager
+		self.lp = LP(self.projFileManager.localLogfile)
 
-		self.videoObj = self.fileManager.returnVideoObject(index)
+		self.videoObj = self.projFileManager.returnVideoObject(index)
 		self.videofile = self.videoObj.localVideoFile
 		self.workers = workers
 
-		self.lightsOnTime = self.videoObj.startTime.replace(hour = self.fileManager.lightsOnTime, minute = 0, second = 0, microsecond = 0)
-		self.lightsOffTime = self.videoObj.startTime.replace(hour = self.fileManager.lightsOffTime, minute = 0, second = 0, microsecond = 0)
+		self.lightsOnTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOnTime, minute = 0, second = 0, microsecond = 0)
+		self.lightsOffTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOffTime, minute = 0, second = 0, microsecond = 0)
 
 		self.HMMsecs = (min(self.videoObj.endTime, self.lightsOffTime) - self.videoObj.startTime).total_seconds() - 1
 
@@ -73,7 +73,7 @@ class VideoPreparer:
 			results = pool.map(self._readBlock, blocks)
 			#print('Data read: ' + str((datetime.datetime.now() - start).seconds) + ' seconds')
 			for row in range(self.videoObj.height):
-				row_file = self.fileManager.localTempDir + str(row) + '.npy'
+				row_file = self.projFileManager.localTempDir + str(row) + '.npy'
 				out_data = np.concatenate([results[x][row] for x in range(len(results))], axis = 1)
 				if os.path.isfile(row_file):
 					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
@@ -106,14 +106,14 @@ class VideoPreparer:
 			print('Calculating HMMs for ' + str(start_row) + ' to ' + str(stop_row - 1))
 			processes = []
 			for row in range(start_row, stop_row):
-				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/HMM_row.py', self.fileManager.localTempDir + str(row) + '.npy']))
+				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/HMM_row.py', self.projFileManager.localTempDir + str(row) + '.npy']))
 			for p in processes:
 				p.communicate()
 		
 		all_data = []
 		# Concatenate all data together
 		for row in range(self.videoObj.height):
-			all_data.append(np.load(self.fileManager.localTempDir + str(row) + '.hmm.npy'))
+			all_data.append(np.load(self.projFileManager.localTempDir + str(row) + '.hmm.npy'))
 		out_data = np.concatenate(all_data, axis = 0)
 
 		# Save npy and txt files for future use
@@ -132,33 +132,33 @@ class VideoPreparer:
 		hmmObj = HA(self.videoObj.localHMMFile)
 
 		# Convert into coords object and save it
-		coords = hmmObj.retDBScanMatrix(self.fileManager.minMagnitude)
+		coords = hmmObj.retDBScanMatrix(self.projFileManager.minMagnitude)
 		np.save(self.videoObj.localRawCoordsFile, coords)
 		
 		# Run data in batches to avoid RAM override
 		sortData = coords[coords[:,0].argsort()][:,0:3] #sort data by time for batch processing, throwing out 4th column (magnitude)
-		numBatches = int(sortData[-1,0]/self.fileManager.delta/3600) + 1 #delta is number of hours to batch together. Can be fraction.
+		numBatches = int(sortData[-1,0]/self.projFileManager.delta/3600) + 1 #delta is number of hours to batch together. Can be fraction.
 
-		sortData[:,0] = sortData[:,0]*self.fileManager.timeScale #scale time so that time distances between transitions are comparable to spatial differences
+		sortData[:,0] = sortData[:,0]*self.projFileManager.timeScale #scale time so that time distances between transitions are comparable to spatial differences
 		labels = np.zeros(shape = (sortData.shape[0],1), dtype = sortData.dtype) # Initialize labels
 
 		#Calculate clusters in batches to avoid RAM overuse
 		curr_label = 0 #Labels for each batch start from zero - need to offset these 
 		for i in range(numBatches):
 		 
-			min_time, max_time = i*self.fileManager.delta*self.fileManager.timeScale*3600, (i+1)*self.fileManager.delta*self.fileManager.timeScale*3600 # Have to deal with rescaling of time. 3600 = # seconds in an hour
+			min_time, max_time = i*self.projFileManager.delta*self.projFileManager.timeScale*3600, (i+1)*self.projFileManager.delta*self.projFileManager.timeScale*3600 # Have to deal with rescaling of time. 3600 = # seconds in an hour
 			hour_range = np.where((sortData[:,0] > min_time) & (sortData[:,0] <= max_time))
 			min_index, max_index = hour_range[0][0], hour_range[0][-1] + 1
-			X = NearestNeighbors(radius=self.fileManager.treeR, metric='minkowski', p=2, algorithm='kd_tree',leaf_size=self.fileManager.leafNum,n_jobs=24).fit(sortData[min_index:max_index])
-			dist = X.radius_neighbors_graph(sortData[min_index:max_index], self.fileManager.neighborR, 'distance')
-			sub_label = DBSCAN(eps=self.fileManager.eps, min_samples=self.fileManager.minPts, metric='precomputed', n_jobs=self.workers).fit_predict(dist)
+			X = NearestNeighbors(radius=self.projFileManager.treeR, metric='minkowski', p=2, algorithm='kd_tree',leaf_size=self.projFileManager.leafNum,n_jobs=24).fit(sortData[min_index:max_index])
+			dist = X.radius_neighbors_graph(sortData[min_index:max_index], self.projFileManager.neighborR, 'distance')
+			sub_label = DBSCAN(eps=self.projFileManager.eps, min_samples=self.projFileManager.minPts, metric='precomputed', n_jobs=self.workers).fit_predict(dist)
 			new_labels = int(sub_label.max()) + 1
 			sub_label[sub_label != -1] += curr_label
 			labels[min_index:max_index,0] = sub_label
 			curr_label += new_labels
 
 		# Concatenate and save information
-		sortData[:,0] = sortData[:,0]/self.fileManager.timeScale
+		sortData[:,0] = sortData[:,0]/self.projFileManager.timeScale
 		labeledCoords = np.concatenate((sortData, labels), axis = 1).astype('int64')
 		np.save(self.videoObj.localLabeledCoordsFile, labeledCoords)
 
@@ -180,11 +180,11 @@ class VideoPreparer:
 		})
 		)
 		clusterData['TimeStamp'] = clusterData.apply(lambda row: (self.videoObj.startTime + datetime.timedelta(seconds = int(row.t))), axis=1)
-		clusterData['ClipName'] = clusterData.apply(lambda row: '__'.join([str(x) for x in [self.lp.projectID, self.videoObj.baseName,row.LID,row.N,row.t,row.X,row.Y]]), axs = 1)
+		clusterData['ClipName'] = clusterData.apply(lambda row: '__'.join([str(x) for x in [self.lp.projectID, self.videoObj.baseName,row.name,row.N,row.t,row.X,row.Y]]), axis = 1)
 		# Identify clusters to make clips for
 		#self._print('Identifying clusters to make clips for', log = False)
-		delta_xy = self.fileManager.delta_xy
-		delta_t = self.fileManager.delta_t
+		delta_xy = self.projFileManager.delta_xy
+		delta_t = self.projFileManager.delta_t
 		smallClips, clipsCreated = 0,0 # keep track of clips with small number of pixel changes
 		for row in clusterData.sample(n = clusterData.shape[0]).itertuples(): # Randomly go through the dataframe
 			LID, N, t, x, y, time = row.Index, row.N, row.t, row.X, row.Y, row.TimeStamp
@@ -198,11 +198,11 @@ class VideoPreparer:
 				continue
 			else:
 				clusterData.loc[clusterData.index == LID,'ClipCreated'] = 'Yes'
-				if N < self.fileManager.smallLimit:
-					if smallClips > self.fileManager.nManualLabelClips/20:
+				if N < self.projFileManager.smallLimit:
+					if smallClips > self.projFileManager.nManualLabelClips/20:
 						continue
 					smallClips += 1
-				if clipsCreated < self.fileManager.nManualLabelClips:
+				if clipsCreated < self.projFileManager.nManualLabelClips:
 					clusterData.loc[clusterData.index == LID,'ManualAnnotation'] = 'Yes'
 					clipsCreated += 1
 
@@ -212,32 +212,34 @@ class VideoPreparer:
 	def _createAnnotationFiles(self):
 		# Clip creation is super slow so we do it in parallel
 		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
+		self.clusterData['ClipName'] = self.clusterData.apply(lambda row: '__'.join([str(x) for x in [self.lp.projectID, self.videoObj.baseName,row.name,row.N,row.t,row.X,row.Y]]), axis = 1)
+
 		hmmObj = HA(self.videoObj.localHMMFile)
 
 		# Create clips for each cluster
 		processes = []
 		for row in self.clusterData[self.clusterData.ClipCreated == 'Yes'].itertuples():
 			LID, N, t, x, y = [str(x) for x in [row.Index, row.N, row.t, row.X, row.Y]]
-			outName = self.fileManager.localAllClipsDir + '__'.join([self.lp.projectID, self.videoObj.baseName,LID,N,t,x,y]) + '.mp4'
+			outName = self.projFileManager.localAllClipsDir + '__'.join([self.lp.projectID, self.videoObj.baseName,LID,N,t,x,y]) + '.mp4'
 			command = ['python3', 'Modules/Scripts/createClip.py', self.videofile, 
-						outName, str(self.fileManager.delta_xy), str(self.fileManager.delta_t), str(self.videoObj.framerate)]
-			#processes.append(subprocess.Popen(command))
-			#if len(processes) == self.workers:
-			#	for p in processes:
-			#		p.communicate()
-			#	processes = []
+						outName, str(self.projFileManager.delta_xy), str(self.projFileManager.delta_t), str(self.videoObj.framerate)]
+			processes.append(subprocess.Popen(command))
+			if len(processes) == self.workers:
+				for p in processes:
+					p.communicate()
+				processes = []
 
 		# Create video clips for manual labeling - this includes HMM data
 		cap = cv2.VideoCapture(self.videofile)
-		delta_xy = self.fileManager.delta_xy
-		delta_t = self.fileManager.delta_t
+		delta_xy = self.projFileManager.delta_xy
+		delta_t = self.projFileManager.delta_t
 		labeledCoords = np.load(self.videoObj.localLabeledCoordsFile)
 		for row in self.clusterData[self.clusterData.ManualAnnotation == 'Yes'].itertuples():
 			LID, N, t, x, y, clipname = row.Index, row.N, row.t, row.X, row.Y, row.ClipName
 			
-			outName_ml = self.fileManager.localManualLabelClipsDir + clipname + '_ManualLabel.mp4'
-			outName_in = self.fileManager.localAllClipsDir + clipname + '.mp4'
-			outName_out = self.fileManager.localManualLabelClipsDir + clipname + '.mp4'
+			outName_ml = self.projFileManager.localManualLabelClipsDir + clipname + '_ManualLabel.mp4'
+			outName_in = self.projFileManager.localAllClipsDir + clipname + '.mp4'
+			outName_out = self.projFileManager.localManualLabelClipsDir + clipname + '.mp4'
 
 			outAllHMM = cv2.VideoWriter(outName_ml, cv2.VideoWriter_fourcc(*"mp4v"), self.videoObj.framerate, (4*delta_xy, 2*delta_xy))
 			cap.set(cv2.CAP_PROP_POS_FRAMES, int(self.videoObj.framerate*(t) - delta_t))
@@ -272,11 +274,11 @@ class VideoPreparer:
 		
 		last_frame = min(self.frames, last_frame)
 
-		for i in range(self.fileManager.nManualLabelFrames):
+		for i in range(self.projFileManager.nManualLabelFrames):
 			frameIndex = random.randint(first_frame, last_frame)
 			cap.set(cv2.CAP_PROP_POS_FRAMES, frameIndex)
 			ret, frame = cap.read()
-			cv2.imwrite(self.fileManager.localManualLabelFramesDir + self.lp.projectID + '_' + self.videoObj.baseName + '_' + str(frameIndex) + '.jpg', frame)     # save frame as JPEG file      
+			cv2.imwrite(self.projFileManager.localManualLabelFramesDir + self.lp.projectID + '_' + self.videoObj.baseName + '_' + str(frameIndex) + '.jpg', frame)     # save frame as JPEG file      
 
  
 

@@ -1,28 +1,37 @@
 from Modules.FileManager import FileManager as FM
+
 import matplotlib.pyplot as plt
-import matplotlib
-
+import matplotlib, datetime, cv2, pdb, os
 from Modules.roipoly import roipoly
-
-import cv2, pdb
 import numpy as np
+
+
 
 class CropPreparer:
 
-	def __init__(self, fileManager):
-		self.fileManager = fileManager
+	def __init__(self, projectID):
+		self.projectID = projectID
+		self.fileManager = FM()
+		self.anFileManager = self.fileManager.retAnFileManager()
+		self.projFileManager = self.fileManager.retProjFileManager(projectID)
+		self.__version__ = '1.0.0'
 
 	def prepData(self):
+		self.projFileManager.prepareCropAnalysis()
 		self._identifyTray()
 		self._cropVideo()
 		self._registerDepthCamera()
 		self._summarizePrep()
+		self._createAnalysisUpdate()
+		self.projFileManager.backupCropAnalysis()
+		self.projFileManager.localDelete()
+		self.anFileManager.deleteAnalysisDir()
 
 	def _identifyTray(self, thresh = 10):
 
-		firstFrame = np.load(self.fileManager.localFirstFrame)
-		lastFrame = np.load(self.fileManager.localLastFrame)
-		depthRGB = cv2.imread(self.fileManager.localDepthRGB)
+		firstFrame = np.load(self.projFileManager.localFirstFrame)
+		lastFrame = np.load(self.projFileManager.localLastFrame)
+		depthRGB = cv2.imread(self.projFileManager.localDepthRGB)
 
 		# Create color image of depth change
 		cmap = plt.get_cmap('jet')
@@ -78,15 +87,15 @@ class CropPreparer:
 				break
 
 		# Save and back up tray file
-		with open(self.fileManager.localTrayFile, 'w') as f:
+		with open(self.projFileManager.localTrayFile, 'w') as f:
 			print(','.join([str(x) for x in self.tray_r]), file = f)
 
 	def _cropVideo(self):
-		im1 =  cv2.imread(self.fileManager.localPiRGB)
+		im1 =  cv2.imread(self.projFileManager.localPiRGB)
 		im1_gray = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
 
 		while True:
-			im1 =  cv2.imread(self.fileManager.localPiRGB)
+			im1 =  cv2.imread(self.projFileManager.localPiRGB)
 			im1_gray = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
 
 			fig = plt.figure(figsize=(9, 12))
@@ -116,8 +125,8 @@ class CropPreparer:
 				#self.videoCrop = ROI1.getMask(im1_gray)
 				break
 
-		np.save(self.fileManager.localVideoCropFile, self.videoCrop)
-		np.save(self.fileManager.localVideoPointsFile, self.videoPoints)
+		np.save(self.projFileManager.localVideoCropFile, self.videoCrop)
+		np.save(self.projFileManager.localVideoPointsFile, self.videoPoints)
 
 	def _registerDepthCamera(self):
 
@@ -125,8 +134,8 @@ class CropPreparer:
 		print('Registering RGB and Depth data ')
 		# Find first videofile during the day
 
-		im1 = cv2.imread(self.fileManager.localDepthRGB)
-		im2 = cv2.imread(self.fileManager.localPiRGB)
+		im1 = cv2.imread(self.projFileManager.localDepthRGB)
+		im2 = cv2.imread(self.projFileManager.localPiRGB)
 		im1_gray = cv2.cvtColor(im1,cv2.COLOR_BGR2GRAY)
 		im2_gray = cv2.cvtColor(im2,cv2.COLOR_BGR2GRAY)
 
@@ -153,12 +162,14 @@ class CropPreparer:
 			ROI2 = roipoly(roicolor='b')
 			plt.show()
 
-			ref_points =[[ROI1.allxpoints[0], ROI1.allypoints[0]], [ROI1.allxpoints[1], ROI1.allypoints[1]], [ROI1.allxpoints[2], ROI1.allypoints[2]], [ROI1.allxpoints[3], ROI1.allypoints[3]]]
-			new_points =[[ROI2.allxpoints[0], ROI2.allypoints[0]], [ROI2.allxpoints[1], ROI2.allypoints[1]], [ROI2.allxpoints[2], ROI2.allypoints[2]], [ROI2.allxpoints[3], ROI2.allypoints[3]]]
 
 			if len(ROI1.allxpoints) != 4 or len(ROI2.allxpoints) != 4:
 				print('Wrong length, ROI1 = ' + str(len(ROI1.allxpoints)) + ', ROI2 = ' + str(len(ROI2.allxpoints)))
 				continue
+		
+			ref_points =[[ROI1.allxpoints[0], ROI1.allypoints[0]], [ROI1.allxpoints[1], ROI1.allypoints[1]], [ROI1.allxpoints[2], ROI1.allypoints[2]], [ROI1.allxpoints[3], ROI1.allypoints[3]]]
+			new_points =[[ROI2.allxpoints[0], ROI2.allypoints[0]], [ROI2.allxpoints[1], ROI2.allypoints[1]], [ROI2.allxpoints[2], ROI2.allypoints[2]], [ROI2.allxpoints[3], ROI2.allypoints[3]]]
+
 		
 			self.transM = cv2.getPerspectiveTransform(np.float32(new_points),np.float32(ref_points))
 			newImage = cv2.warpPerspective(im2_gray, self.transM, (640, 480))
@@ -181,14 +192,14 @@ class CropPreparer:
 			if userInput == 'q':
 				break
 
-		np.save(self.fileManager.localTransMFile, self.transM)
+		np.save(self.projFileManager.localTransMFile, self.transM)
 
 	def _summarizePrep(self):
-		firstFrame = np.load(self.fileManager.localFirstFrame)
-		lastFrame = np.load(self.fileManager.localLastFrame)
-		depthRGB = cv2.imread(self.fileManager.localDepthRGB)
+		firstFrame = np.load(self.projFileManager.localFirstFrame)
+		lastFrame = np.load(self.projFileManager.localLastFrame)
+		depthRGB = cv2.imread(self.projFileManager.localDepthRGB)
 		#depthRGB = cv2.cvtColor(depthRGB,cv2.COLOR_BGR2GRAY)
-		piRGB =  cv2.imread(self.fileManager.localPiRGB)
+		piRGB =  cv2.imread(self.projFileManager.localPiRGB)
 		piRGB = cv2.cvtColor(piRGB,cv2.COLOR_BGR2GRAY)
 
 		cmap = plt.get_cmap('jet')
@@ -217,7 +228,13 @@ class CropPreparer:
 		ax4.add_patch(matplotlib.patches.Rectangle((self.tray_r[1],self.tray_r[0]), self.tray_r[3] - self.tray_r[1], self.tray_r[2] - self.tray_r[0], color="orange", fill = False, lw = 3.0))
 		ax4.set_title("Registered Pi RGB image with video and depth crop")
 
-		fig.savefig(self.fileManager.localPrepSummaryFigure, dpi=300)
+		fig.savefig(self.projFileManager.localPrepSummaryFigure, dpi=300)
 
 		plt.show()
 
+	def _createAnalysisUpdate(self):
+		now = datetime.datetime.now()
+		with open(self.anFileManager.localMasterDir + 'AnalysisUpdate_' + str(now) + '.csv', 'w') as f:
+			print('ProjectID,Type,Version,Date', file = f)
+			print(self.projectID + ',Prep,' + os.getenv('USER') + '_' + self.__version__ + ',' + str(now), file= f)
+		self.anFileManager.uploadAnalysisUpdate('AnalysisUpdate_' + str(now) + '.csv')

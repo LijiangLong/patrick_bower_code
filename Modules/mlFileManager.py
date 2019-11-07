@@ -18,7 +18,7 @@ class MLFileManager():
 		self.cloudFishDetectionModelsDir = self.cloudMasterDir + self.videoModelsDir
 		self.localFishDetectionModelsDir = self.localMasterDir + self.videoModelsDir
 
-		self.fishPoseModelsDir = 'FishPoseModels/'
+		self.fishPoseModelsDir = 'DeepLabCutModels/'
 		self.cloudVideoModelsDir = self.cloudMasterDir + self.videoModelsDir
 		self.localVideoModelsDir = self.localMasterDir + self.videoModelsDir
 
@@ -34,7 +34,9 @@ class MLFileManager():
 		self.localVideoModelFile = self.localActivDir + vModelID + '/model.pth'
 		self.localVideoClassesFile = self.localActivDir + vModelID + '/classInd.txt'
 		self.localVideoCommandsFile = self.localActivDir + vModelID + '/commands.pkl'
-		self.localVideoPythonFile = '3D-Resnets/main.py'
+		self.localVideoPythonMainFile = '3D-Resnets/main.py'
+		self.localVideoPythonJsonFile = '3D-Resnets/utils/cichlids_json.py'
+
 
 	def _downloadDirectory(self, directory):
 
