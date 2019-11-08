@@ -21,6 +21,8 @@ class MLFileManager():
 		self.cloudVideoModelsDir = self.cloudMasterDir + self.videoModelsDir
 		self.localVideoModelsDir = self.localMasterDir + self.videoModelsDir
 
+		self.videoMLGithub = 'https://www.github.com/ptmcgrat/3D-Resnets'
+
 	def prepareMLVideoClassification(self, vModelID):
 		self.vModelID = vModelID
 
