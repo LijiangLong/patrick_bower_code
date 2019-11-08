@@ -65,7 +65,7 @@ class VideoPreparer:
 		h264_video = mp4_video.replace('.mp4', '.h264')
 		assert os.path.isfile(h264_video)
 
-		command = ['ffmpeg', '-r', str(self.videoObj.frame_rate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.frame_rate), mp4_video]
+		command = ['ffmpeg', '-r', str(self.videoObj.framerate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.framerate), mp4_video]
 		print('VideoConversion: ' + ' '.join(command))
 		subprocess.call(command)
 		assert os.path.isfile(mp4_video)
