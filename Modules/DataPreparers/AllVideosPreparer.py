@@ -41,7 +41,7 @@ class AllVideosPreparer():
 	def prepareAllMLData(self, mlModelID, cluster = True):
 		print('Downloading data necessary for ML analysis of ' + self.projectID + ',,Time: ' + str(datetime.datetime.now()))
 
-		self.projFileManager.prepareMLVideoAnalysis(cluster = True)
+		self.projFileManager.prepareMLVideoAnalysis(cluster)
 		self.mlFileManager.prepareMLVideoClassification(mlModelID)
 		self.lp = LP(self.projFileManager.localLogfile)
 
