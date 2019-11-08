@@ -1,3 +1,4 @@
+import datetime
 
 from Modules.LogParser import LogParser as LP
 from Modules.FileManager import FileManager as FM
@@ -50,6 +51,7 @@ class AllVideosPreparer():
 		clusterData = []
 		self.vp_objs = []
 		for index in range(len(self.lp.movies)):
+			print('Processing video: ' + self.lp.movies[index].mp4_file + str(datetime.datetime.now()))
 			self.vp_objs.append(VP(self.projFileManager, index, self.workers))
 			if not parallel:				
 				clusterData.append(self.vp_objs[index].processVideo())
