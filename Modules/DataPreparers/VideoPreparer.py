@@ -66,7 +66,7 @@ class VideoPreparer:
 		assert os.path.isfile(h264_video)
 
 		command = ['ffmpeg', '-r', str(self.videoObj.framerate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.framerate), mp4_video]
-		print('VideoConversion: ' + ' '.join(command))
+		print('VideoConversion: ' + ' '.join(command) + ',Time' + str(datetime.datetime.now()))
 		output = subprocess.run(command, stdout = subprocess.PIPE, stdin = subprocess.PIPE)
 		assert os.path.isfile(mp4_video)
 
@@ -81,6 +81,7 @@ class VideoPreparer:
 
 		totalBlocks = math.ceil(self.HMMsecs/(self.blocksize)) #Number of blocks that need to be analyzed for the full video
 		pool = ThreadPool(self.workers) #Create pool of threads for parallel analysis of data
+		print('Decompressing video into 1 second chunks,,Time: ' + str(datetime.datetime.now()))
 
 		for i in range(0, totalBlocks, self.workers):
 			blocks = list(range(i, min(i + self.workers, totalBlocks)))
@@ -114,11 +115,12 @@ class VideoPreparer:
 
 	def _calculateHMM(self):
 		totalBlocks = math.ceil(self.videoObj.height/self.workers)
+		print('Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
 		# Calculate HMM on each block
 		for block in range(0, totalBlocks):
 			start_row = block*self.workers
 			stop_row = min((block+1)*self.workers,self.videoObj.height)
-			print('Calculating HMMs for ' + str(start_row) + '-' + str(stop_row - 1), end = '', flush = True)
+			print(str(start_row) + '-' + str(stop_row - 1) + ',', end = '', flush = True)
 			processes = []
 			for row in range(start_row, stop_row):
 				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/HMM_row.py', self.videoObj.localTempDir + str(row) + '.npy']))
@@ -142,6 +144,7 @@ class VideoPreparer:
 		# Delete temp data
 
 	def _createClusters(self):
+		print('Creating clusters from HMM transitions,,Time: ' + str(datetime.datetime.now())) 
 
 		# Load in HMM data
 		hmmObj = HA(self.videoObj.localHMMFile)
