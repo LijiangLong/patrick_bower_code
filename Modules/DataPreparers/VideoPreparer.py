@@ -66,12 +66,12 @@ class VideoPreparer:
 		assert os.path.isfile(h264_video)
 
 		command = ['ffmpeg', '-r', str(self.videoObj.frame_rate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.frame_rate), mp4_video]
-        print('VideoConversion: ' + ' '.join(command))
-        subprocess.call(command)
-        assert os.path.isfile(mp4_video)
+		print('VideoConversion: ' + ' '.join(command))
+		subprocess.call(command)
+		assert os.path.isfile(mp4_video)
 
-        # Ensure the conversion went ok.     
-        assert os.stat(mp4_video).st_size >= os.stat(h264_video).st_size
+		# Ensure the conversion went ok.     
+		assert os.stat(mp4_video).st_size >= os.stat(h264_video).st_size
 
 
 	def _decompressVideo(self):
