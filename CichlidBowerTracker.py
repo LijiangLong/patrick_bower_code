@@ -5,6 +5,10 @@ from Modules.DataPreparers.CropPreparer import CropPreparer as CP
 from Modules.DataPreparers.DepthPreparer import DepthPreparer as DP
 from Modules.DataPreparers.AllVideosPreparer import AllVideosPreparer as AVP
 
+import warnings
+warnings.filterwarnings('ignore')
+
+
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='Available Commands', dest='command')
 
