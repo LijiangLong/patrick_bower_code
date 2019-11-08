@@ -29,14 +29,17 @@ class MLFileManager():
 		self.cloudActiveDir = self.cloudVideoModelsDir
 		self.localActiveDir = self.localVideoModelsDir
 
-		subprocess.run(['git', 'clone', self.videoMLGithub])
+		if os.path.exists('3D-Resnets'):
+			subprocess.run(['git', 'pull', '3D-Resnets'])
+		else:
+			subprocess.run(['git', 'clone', self.videoMLGithub, self.localMasterDir])
 
 		self._downloadDirectory(self.vModelID)
 		self.localVideoModelFile = self.localActiveDir + vModelID + '/model.pth'
 		self.localVideoClassesFile = self.localActiveDir + vModelID + '/classInd.txt'
 		self.localVideoCommandsFile = self.localActiveDir + vModelID + '/commands.pkl'
-		self.localVideoPythonMainFile = '3D-Resnets/main.py'
-		self.localVideoPythonJsonFile = '3D-Resnets/utils/cichlids_json.py'
+		self.localVideoPythonMainFile = self.localMasterDir + '3D-Resnets/main.py'
+		self.localVideoPythonJsonFile = self.localMasterDir + '3D-Resnets/utils/cichlids_json.py'
 
 
 	def _downloadDirectory(self, directory):
