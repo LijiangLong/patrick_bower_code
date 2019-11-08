@@ -42,6 +42,6 @@ class MLFileManager():
 	def _downloadDirectory(self, directory):
 
 		# First try to download tarred Directory
-		subprocess.run(['rclone', 'copy', self.cloudActive + directory, self.localActiveDir + directory], stderr = self.errorLog)
+		subprocess.run(['rclone', 'copy', self.cloudActiveDir + directory, self.localActiveDir + directory])
 		if not os.path.exists(self.localActiveDir + directory):
-			raise FileNotFoundError('Unable to download ' + directory + ' from ' + self.cloudMasterDir)
+			raise FileNotFoundError('Unable to download ' + directory + ' from ' + self.cloudActiveDir)
