@@ -108,7 +108,7 @@ if args.command == 'VideoPreparer':
 			pass
 			avp_obj.prepareAllClusterData()
 		if args.MachineLearning is not None:
-			avp_obj.prepareAllMLData(args.MachineLearning)
+			avp_obj.prepareAllMLData(args.MachineLearning, cluster = False)
 		if not args.noCluster:
 			avp_obj.runClusterAnalysis()
 		if args.MachineLearning is not None:

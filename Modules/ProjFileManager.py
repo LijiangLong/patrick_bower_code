@@ -58,13 +58,14 @@ class ProjFileManager():
 		self._uploadDirectory(self.manualLabelClipsDir, tar = True)
 		self._uploadDirectory(self.manualLabelFramesDir, tar = True)
 
-	def prepareMLVideoAnalysis(self):
+	def prepareMLVideoAnalysis(self, cluster = True):
 		self._createDirectory(self.localMasterDir)
 		self._createDirectory(self.localProcessedClipsDir)
 
 		self._downloadFile(self.logfile)
-		self._downloadDirectory(self.analysisDir)
-		self._downloadDirectory(self.allClipsDir)
+		if cluster:
+			self._downloadDirectory(self.analysisDir)
+			self._downloadDirectory(self.allClipsDir)
 
 
 	def prepareFigureAnalysis(self):

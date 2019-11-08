@@ -38,10 +38,10 @@ class AllVideosPreparer():
 		self.lp = LP(self.projFileManager.localLogfile)
 
 
-	def prepareAllMLData(self, mlModelID):
+	def prepareAllMLData(self, mlModelID, cluster = True):
 		print('Downloading data necessary for ML analysis of ' + self.projectID + ',,Time: ' + str(datetime.datetime.now()))
 
-		self.projFileManager.prepareMLVideoAnalysis()
+		self.projFileManager.prepareMLVideoAnalysis(cluster = True)
 		self.mlFileManager.prepareMLVideoClassification(mlModelID)
 		self.lp = LP(self.projFileManager.localLogfile)
 
