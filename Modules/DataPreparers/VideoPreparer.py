@@ -118,13 +118,13 @@ class VideoPreparer:
 		for block in range(0, totalBlocks):
 			start_row = block*self.workers
 			stop_row = min((block+1)*self.workers,self.videoObj.height)
-			print('Calculating HMMs for ' + str(start_row) + ' to ' + str(stop_row - 1))
+			print('Calculating HMMs for ' + str(start_row) + '-' + str(stop_row - 1), end = '', flush = True)
 			processes = []
 			for row in range(start_row, stop_row):
 				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/HMM_row.py', self.videoObj.localTempDir + str(row) + '.npy']))
 			for p in processes:
 				p.communicate()
-		
+		print()
 		all_data = []
 		# Concatenate all data together
 		for row in range(self.videoObj.height):

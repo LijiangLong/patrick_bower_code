@@ -51,7 +51,7 @@ class AllVideosPreparer():
 		clusterData = []
 		self.vp_objs = []
 		for index in range(len(self.lp.movies)):
-			print('Processing video: ' + self.lp.movies[index].mp4_file + str(datetime.datetime.now()))
+			print('Processing video: ' + self.lp.movies[index].mp4_file + ',,Time: ' + str(datetime.datetime.now()))
 			self.vp_objs.append(VP(self.projFileManager, index, self.workers))
 			if not parallel:				
 				clusterData.append(self.vp_objs[index].processVideo())
