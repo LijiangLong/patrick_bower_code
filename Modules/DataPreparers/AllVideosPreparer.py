@@ -39,7 +39,7 @@ class AllVideosPreparer():
 
 
 	def prepareAllMLData(self, mlModelID):
-		print('Downloading data necessary for ML analysis of ' + projectID + ',,Time: ' + str(datetime.datetime.now()))
+		print('Downloading data necessary for ML analysis of ' + self.projectID + ',,Time: ' + str(datetime.datetime.now()))
 
 		self.projFileManager.prepareMLVideoAnalysis()
 		self.mlFileManager.prepareMLVideoClassification(mlModelID)
