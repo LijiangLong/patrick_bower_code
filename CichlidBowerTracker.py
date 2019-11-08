@@ -101,15 +101,15 @@ if args.command == 'VideoPreparer':
 
 	for projectID in projects:
 		avp_obj = AVP(projectID)
-		if not args.MachineLearning:
+		if not args.noCluster:
 			pass
 			avp_obj.prepareAllClusterData()
-		if not args.Cluster:
-			avp_obj.prepareAllMLData()
-		if not args.MachineLearning:
+		if args.MachineLearning is not None:
+			avp_obj.prepareAllMLData(args.MachineLearning)
+		if not args.noCluster:
 			avp_obj.runClusterAnalysis()
-		if not args.Cluster:
-			avp_obj.predictClusterLabels()
+		if args.MachineLearning is not None:
+			avp_obj.predictClusterLabels(args.MachineLearning)
 
 
 
