@@ -94,7 +94,7 @@ class ProjFileManager():
 		videoObj.localManualLabelClipsPrefix = self.localManualLabelClipsDir + self.lp.projectID + '_' + videoObj.baseName
 		videoObj.localIntensityFile = self.localFigureDir + videoObj.baseName + '_intensity.pdf'
 		videoObj.localTempDir = self.localTempDir + videoObj.baseName + '/'
-		self._createDirectory(self.videoObj.localTempDir)
+		self._createDirectory(videoObj.localTempDir)
 
 		return videoObj
 
