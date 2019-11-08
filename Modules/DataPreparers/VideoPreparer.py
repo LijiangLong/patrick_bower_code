@@ -39,6 +39,8 @@ class VideoPreparer:
 		return self.clusterData
 
 	def _validateVideo(self, tol = 0.001):
+		if not os.path.isfile(self.videofile):
+			self._convertVideo(self.videofile)
 		assert os.path.isfile(self.videofile)
 		
 		cap = cv2.VideoCapture(self.videofile)
@@ -58,6 +60,19 @@ class VideoPreparer:
 		self.frames = new_frames
 
 		cap.release()
+
+	def _convertVideo(self, mp4_video):
+		h264_video = mp4_video.replace('.mp4', '.h264')
+		assert os.path.isfile(h264_video)
+
+		command = ['ffmpeg', '-r', str(self.videoObj.frame_rate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.frame_rate), mp4_video]
+        print('VideoConversion: ' + ' '.join(command))
+        subprocess.call(command)
+        assert os.path.isfile(mp4_video)
+
+        # Ensure the conversion went ok.     
+        assert os.stat(mp4_video).st_size >= os.stat(h264_video).st_size
+
 
 	def _decompressVideo(self):
 
