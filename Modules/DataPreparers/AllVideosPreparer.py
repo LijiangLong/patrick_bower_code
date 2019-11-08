@@ -35,7 +35,7 @@ class AllVideosPreparer():
 
 
 	def prepareAllMLData(self, mlModelID):
-		self.projFileManager.prepareMLAnalysis()
+		self.projFileManager.prepareMLVideoAnalysis()
 		self.mlFileManager.prepareMLVideoClassification(mlModelID)
 		self.lp = LP(self.projFileManager.localLogfile)
 
