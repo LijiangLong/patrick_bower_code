@@ -67,7 +67,7 @@ class VideoPreparer:
 
 		command = ['ffmpeg', '-r', str(self.videoObj.framerate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.framerate), mp4_video]
 		print('VideoConversion: ' + ' '.join(command))
-		subprocess.call(command)
+		output = subprocess.run(command, stdout = subprocess.PIPE, stdin = subprocess.PIPE)
 		assert os.path.isfile(mp4_video)
 
 		# Ensure the conversion went ok.     

@@ -29,10 +29,10 @@ class MLFileManager():
 		self.cloudActiveDir = self.cloudVideoModelsDir
 		self.localActiveDir = self.localVideoModelsDir
 
-		if os.path.exists('3D-Resnets'):
-			subprocess.run(['git', 'pull', '3D-Resnets'])
+		if os.path.exists(self.localMasterDir + '3D-Resnets'):
+			subprocess.run(['git', 'pull', self.localMasterDir + '3D-Resnets'])
 		else:
-			subprocess.run(['git', 'clone', self.videoMLGithub, self.localMasterDir])
+			subprocess.run(['git', 'clone', self.videoMLGithub, self.localMasterDir + '3D-Resnets'])
 
 		self._downloadDirectory(self.vModelID)
 		self.localVideoModelFile = self.localActiveDir + vModelID + '/model.pth'
