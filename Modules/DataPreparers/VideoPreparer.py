@@ -17,7 +17,7 @@ class VideoPreparer:
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
 	def __init__(self, projFileManager, index, workers):
-		self.projFileManager = FileManager
+		self.projFileManager = projFileManager
 		self.lp = LP(self.projFileManager.localLogfile)
 
 		self.videoObj = self.projFileManager.returnVideoObject(index)
