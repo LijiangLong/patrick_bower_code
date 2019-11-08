@@ -86,7 +86,7 @@ class ProjFileManager():
 		self.lp = LP(self.localLogfile)
 		videoObj = self.lp.movies[index]
 		videoObj.localVideoFile = self.localMasterDir + videoObj.mp4_file
-		videoObj.localHMMFile = self.localTroubleShootingDir + videoObj.baseName + '.hmm'
+		videoObj.localHMMFile = self.localTroubleshootingDir + videoObj.baseName + '.hmm'
 		videoObj.localRawCoordsFile = self.localTroubleshootingDir + videoObj.baseName + '_rawCoords.npy'
 		videoObj.localLabeledCoordsFile = self.localTroubleshootingDir + videoObj.baseName + '_labeledCoords.npy'
 		videoObj.localLabeledClustersFile = self.localVideoAnalysisDir + videoObj.baseName + '_labeledClusters.csv'
