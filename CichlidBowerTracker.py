@@ -23,8 +23,8 @@ depthParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if 
 prepParser = subparsers.add_parser('VideoPreparer', help='This command takes prepares the video data for downstream analysis')
 prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
 prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
-prepParser.add_argument('-c', '--Cluster', action = 'store_true', help = 'Use this flag if you only want to analyze clusters')
-prepParser.add_argument('-m', '--MachineLearning', action = 'store_true', help = 'Use this flag if you only want to perform machine learning analysis')
+prepParser.add_argument('-c', '--noCluster', action = 'store_true', help = 'Use this flag if you do not want to do cluster analysis (assumes it is already done)')
+prepParser.add_argument('-m', '--MachineLearning', type = str, help = 'Use this flag if you want to perform machine learning - requres Machine learning model')
 
 
 args = parser.parse_args()
@@ -102,6 +102,7 @@ if args.command == 'VideoPreparer':
 	for projectID in projects:
 		avp_obj = AVP(projectID)
 		if not args.MachineLearning:
+			pass
 			avp_obj.prepareAllClusterData()
 		if not args.Cluster:
 			avp_obj.prepareAllMLData()
