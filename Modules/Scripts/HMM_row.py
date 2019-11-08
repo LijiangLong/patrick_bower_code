@@ -2,6 +2,8 @@ import argparse, pdb
 import numpy as np
 import scipy.ndimage.filters
 from hmmlearn import hmm
+import warnings
+warnings.filterwarnings('ignore')
 
 
 parser = argparse.ArgumentParser(description='This command runs HMM analysis on a single row of data.')
