@@ -103,4 +103,4 @@ for column in data:
         transition += 1
 out_data = np.delete(out_data, range(transition, out_data.shape[0]), axis = 0)
 np.save(args.Rowfile.replace('.npy', '.hmm.npy'), out_data)
-
+subprocess.run(['rm', '-f', args.Rowfile])
