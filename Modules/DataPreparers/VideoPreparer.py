@@ -5,10 +5,6 @@ from sklearn.cluster import DBSCAN
 from sklearn.neighbors import radius_neighbors_graph
 from sklearn.neighbors import NearestNeighbors
 
-import warnings
-warnings.filterwarnings('ignore')
-
-
 import numpy as np
 import pandas as pd
 import os, cv2, math, datetime, subprocess, pdb, random
