@@ -89,7 +89,7 @@ class ProjFileManager():
 		videoObj.localHMMFile = self.localTroubleshootingDir + videoObj.baseName + '.hmm'
 		videoObj.localRawCoordsFile = self.localTroubleshootingDir + videoObj.baseName + '_rawCoords.npy'
 		videoObj.localLabeledCoordsFile = self.localTroubleshootingDir + videoObj.baseName + '_labeledCoords.npy'
-		videoObj.localLabeledClustersFile = self.localAnalysisDir + videoObj.baseName + '_labeledClusters.csv'
+		videoObj.localLabeledClustersFile = self.localTroubleshootingDir + videoObj.baseName + '_labeledClusters.csv'
 		videoObj.localAllClipsPrefix = self.localAllClipsDir + self.lp.projectID + '_' + videoObj.baseName
 		videoObj.localManualLabelClipsPrefix = self.localManualLabelClipsDir + self.lp.projectID + '_' + videoObj.baseName
 		videoObj.localIntensityFile = self.localFigureDir + videoObj.baseName + '_intensity.pdf'

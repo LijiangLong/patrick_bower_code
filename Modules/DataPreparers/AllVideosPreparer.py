@@ -32,11 +32,15 @@ class AllVideosPreparer():
 
 
 	def prepareAllClusterData(self):
+		print('Downloading data necessary for cluster analysis of ' + projectID + ',,Time: ' + str(datetime.datetime.now()))
+
 		self.projFileManager.prepareClusterAnalysis()
 		self.lp = LP(self.projFileManager.localLogfile)
 
 
 	def prepareAllMLData(self, mlModelID):
+		print('Downloading data necessary for ML analysis of ' + projectID + ',,Time: ' + str(datetime.datetime.now()))
+
 		self.projFileManager.prepareMLVideoAnalysis()
 		self.mlFileManager.prepareMLVideoClassification(mlModelID)
 		self.lp = LP(self.projFileManager.localLogfile)
