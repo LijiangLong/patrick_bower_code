@@ -73,7 +73,7 @@ class VideoPreparer:
 			results = pool.map(self._readBlock, blocks)
 			#print('Data read: ' + str((datetime.datetime.now() - start).seconds) + ' seconds')
 			for row in range(self.videoObj.height):
-				row_file = self.projFileManager.localTempDir + str(row) + '.npy'
+				row_file = self.videoObj.localTempDir + str(row) + '.npy'
 				out_data = np.concatenate([results[x][row] for x in range(len(results))], axis = 1)
 				if os.path.isfile(row_file):
 					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
@@ -106,14 +106,14 @@ class VideoPreparer:
 			print('Calculating HMMs for ' + str(start_row) + ' to ' + str(stop_row - 1))
 			processes = []
 			for row in range(start_row, stop_row):
-				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/HMM_row.py', self.projFileManager.localTempDir + str(row) + '.npy']))
+				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/HMM_row.py', self.videoObj.localTempDir + str(row) + '.npy']))
 			for p in processes:
 				p.communicate()
 		
 		all_data = []
 		# Concatenate all data together
 		for row in range(self.videoObj.height):
-			all_data.append(np.load(self.projFileManager.localTempDir + str(row) + '.hmm.npy'))
+			all_data.append(np.load(self.videoObj.localTempDir + str(row) + '.hmm.npy'))
 		out_data = np.concatenate(all_data, axis = 0)
 
 		# Save npy and txt files for future use
