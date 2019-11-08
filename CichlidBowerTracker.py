@@ -27,6 +27,7 @@ prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type
 prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
 prepParser.add_argument('-c', '--noCluster', action = 'store_true', help = 'Use this flag if you do not want to do cluster analysis (assumes it is already done)')
 prepParser.add_argument('-m', '--MachineLearning', type = str, help = 'Use this flag if you want to perform machine learning - requres Machine learning model')
+prepParser.add_argument('-p', '--PACE', action = 'store_true', help = 'Use this flag if you are running this analysis on the PACE biocluster')
 
 
 args = parser.parse_args()
