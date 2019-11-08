@@ -6,6 +6,7 @@ class MLFileManager():
 		self.analysisDir = '__MachineLearningModels/'
 		self.localMasterDir = localMasterDir + self.analysisDir
 		self.cloudMasterDir = cloudMasterDir + self.analysisDir
+		self._createFileDirectoryNames()
 
 	def _createFileDirectoryNames(self):
 		self.videoModelsDir = 'VideoModels/'
