@@ -10,9 +10,10 @@ class AllVideosPreparer():
 	# 3. Automatically identifies bower location
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
-	def __init__(self, projectID):
+	def __init__(self, projectID, workers = 24):
 
 		self.projectID = projectID
+		self.workers = 24
 		self.fileManager = FM()
 		self.anFileManager = self.fileManager.retAnFileManager()
 		self.projFileManager = self.fileManager.retProjFileManager(projectID)
@@ -45,11 +46,11 @@ class AllVideosPreparer():
 		self.projFileManager.localDelete()
 		self.anFileManager.deleteAnalysisDir()
 
-	def runClusterAnalysis(self, parallel = False, workers = 8):
+	def runClusterAnalysis(self, parallel = False):
 		clusterData = []
 		self.vp_objs = []
 		for index in range(len(self.lp.movies)):
-			self.vp_objs.append(VP(self.projFileManager, index, workers))
+			self.vp_objs.append(VP(self.projFileManager, index, self.workers))
 			if not parallel:				
 				clusterData.append(self.vp_objs[index].processVideo())
 		if parallel:
