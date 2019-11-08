@@ -32,9 +32,9 @@ class MLFileManager():
 		subprocess.run(['git', 'clone', self.videoMLGithub])
 
 		self._downloadDirectory(self.vModelID)
-		self.localVideoModelFile = self.localActivDir + vModelID + '/model.pth'
-		self.localVideoClassesFile = self.localActivDir + vModelID + '/classInd.txt'
-		self.localVideoCommandsFile = self.localActivDir + vModelID + '/commands.pkl'
+		self.localVideoModelFile = self.localActiveDir + vModelID + '/model.pth'
+		self.localVideoClassesFile = self.localActiveDir + vModelID + '/classInd.txt'
+		self.localVideoCommandsFile = self.localActiveDir + vModelID + '/commands.pkl'
 		self.localVideoPythonMainFile = '3D-Resnets/main.py'
 		self.localVideoPythonJsonFile = '3D-Resnets/utils/cichlids_json.py'
 
