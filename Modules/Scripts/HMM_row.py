@@ -93,6 +93,7 @@ for i, column in enumerate(data):
 	cpos = 0
 	split_data = np.split(column, 1 + np.where(np.diff(column) != 0)[0])
 	for j,d in enumerate(split_data):
+		print(d)
 		if j==0:
 			change = 0
 		else:
