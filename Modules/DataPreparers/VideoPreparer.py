@@ -124,7 +124,7 @@ class VideoPreparer:
 				# Verify size is right
 				if block + 1 == totalBlocks:
 					try:
-						assert out_data.shape != (self.videoObj.width, self.HMMsecs)
+						assert out_data.shape == (self.videoObj.width, self.HMMsecs)
 					except AssertionError:
 						pdb.set_trace()
 			#subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
@@ -248,7 +248,7 @@ class VideoPreparer:
 		self.clusterData = clusterData
 
 	def _createAnnotationFiles(self):
-		print('Creating small video clips for classification and manual labeling,,Time: ' + str(datetime.datetime.now())) 
+		print('Creating small video clips for classification,,Time: ' + str(datetime.datetime.now())) 
 
 		# Clip creation is super slow so we do it in parallel
 		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
@@ -268,6 +268,8 @@ class VideoPreparer:
 				for p in processes:
 					p.communicate()
 				processes = []
+		
+		print('Creating small video clips for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create video clips for manual labeling - this includes HMM data
 		cap = cv2.VideoCapture(self.videofile)
@@ -301,6 +303,7 @@ class VideoPreparer:
 			assert(os.path.exists(outName_out))
 		cap.release()
 
+		print('Creating frames for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create frames for manual labeling
 		cap = cv2.VideoCapture(self.videofile)
