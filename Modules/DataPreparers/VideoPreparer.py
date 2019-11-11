@@ -123,7 +123,10 @@ class VideoPreparer:
 
 				# Verify size is right
 				if block + 1 == totalBlocks:
-					assert out_data.shape != (self.videoObj.width, self.HMMsecs)
+					try:
+						assert out_data.shape != (self.videoObj.width, self.HMMsecs)
+					except AssertionError:
+						pdb.set_trace()
 			#subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
 
 
