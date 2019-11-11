@@ -27,7 +27,7 @@ class VideoPreparer:
 		self.lightsOnTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOnTime, minute = 0, second = 0, microsecond = 0)
 		self.lightsOffTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOffTime, minute = 0, second = 0, microsecond = 0)
 
-		self.HMMsecs = (min(self.videoObj.endTime, self.lightsOffTime) - self.videoObj.startTime).total_seconds() - 1
+		self.HMMsecs = int((min(self.videoObj.endTime, self.lightsOffTime) - self.videoObj.startTime).total_seconds() - 1)
 
 	def processVideo(self):
 		self._validateVideo()
@@ -86,15 +86,15 @@ class VideoPreparer:
 			print(str(i) + '-' + str(i+self.workers) + ',', end = '', flush = True)
 			processes = []
 			for j in range(self.workers):
-				min_frame = (i+j)*self.blocksize*self.videoObj.framerate
-				max_frame = min((i+j+1)*self.blocksize, self.HMMsecs)*self.videoObj.framerate
+				min_time = int((i+j)*self.blocksize)
+				max_time = int(min((i+j+1)*self.blocksize, self.HMMsecs))
 				
-				arguments = [self.videofile, str(self.videoObj.framerate), str(min_frame), str(max_frame), self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
+				arguments = [self.videofile, str(self.videoObj.framerate), str(min_time), str(max_time), self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
 				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/Decompress_block.py'] + arguments))
 			
 			for p in processes:
 				p.communicate()
-
+		print()
 		for block in range(totalBlocks):
 			data = np.load(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy')
 			for row in range(self.videoObj.height):
