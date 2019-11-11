@@ -169,7 +169,7 @@ class VideoPreparer:
 		curr_label = 0 #Labels for each batch start from zero - need to offset these 
 		print(str(numBatches) + ' total batches. On batch: ', end = '', flush = True)
 		for i in range(numBatches):
-		 	print(str(i) + ',', end = '', flush = True)
+			print(str(i) + ',', end = '', flush = True)
 
 			min_time, max_time = i*self.projFileManager.delta*self.projFileManager.timeScale*3600, (i+1)*self.projFileManager.delta*self.projFileManager.timeScale*3600 # Have to deal with rescaling of time. 3600 = # seconds in an hour
 			hour_range = np.where((sortData[:,0] > min_time) & (sortData[:,0] <= max_time))

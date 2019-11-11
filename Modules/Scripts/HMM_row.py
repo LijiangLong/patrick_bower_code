@@ -44,44 +44,44 @@ nans, x = data==0, lambda z: z.nonzero()[0]
 data[nans]= np.interp(x(nans), x(~nans), data[~nans]) # position of missing data, position of non-missing data, value of non-missing data
 data = np.reshape(data, newshape = original_shape, order = 'C').astype('uint8') # Reshape data back to original shape
 del nans, x # Can delete these now that we are done with interpolation
-        
+		
 # Calculate HMM for each column in the row
 #zs = np.zeros(shape = data.shape, dtype = 'uint8') # 
 for i, column in enumerate(data): # Iterate through each column
 
-    # In order to save time for the HMM calculation, we only use states that are commonly found
-    means = scipy.ndimage.filters.uniform_filter(column, size = hmm_window, mode = 'reflect').astype('uint8')
-    freq, bins = np.histogram(means, bins = range(0,257,2))
-    states = bins[0:-1][freq > hmm_window]
-    n_states = len(states)
+	# In order to save time for the HMM calculation, we only use states that are commonly found
+	means = scipy.ndimage.filters.uniform_filter(column, size = hmm_window, mode = 'reflect').astype('uint8')
+	freq, bins = np.histogram(means, bins = range(0,257,2))
+	states = bins[0:-1][freq > hmm_window]
+	n_states = len(states)
 
-    # Calculate HMM
-    model = hmm.GaussianHMM(n_components=n_states, covariance_type="spherical")
-    model.startprob_ = np.array(n_states*[1/n_states])
-    change = 1/(seconds_to_change) # probability of transitioning states
+	# Calculate HMM
+	model = hmm.GaussianHMM(n_components=n_states, covariance_type="spherical")
+	model.startprob_ = np.array(n_states*[1/n_states])
+	change = 1/(seconds_to_change) # probability of transitioning states
 
-    # Create transition matrix
-    trans = np.zeros(shape = (n_states, n_states))
-    for k,state in enumerate(states):
-        s_trans = np.zeros(shape = states.shape) # Create row
-        n_trans_states = np.count_nonzero((states > state + non_transition_bins) | (states < state - non_transition_bins))
-        if n_trans_states != 0:
-            s_trans[(states > state + non_transition_bins) | (states < state - non_transition_bins)] = change/n_trans_states
-            s_trans[states == state] = 1 - change
-        else:
-            s_trans[states == state] = 1
-        trans[k] = s_trans
-                 
-    # Set various values of HMM model  
-    model.transmat_ = np.array(trans)
-    model.means_ = states.reshape(-1,1)
-    model.covars_ = np.array(n_states*[std])
-            
-    # Calculate HMM
-    z = [model.means_[x][0] for x in model.predict(column.reshape(-1,1))]
-    
-    # Overwrite data with new HMM data
-    data[i,:] = np.array(z).astype('uint8')
+	# Create transition matrix
+	trans = np.zeros(shape = (n_states, n_states))
+	for k,state in enumerate(states):
+		s_trans = np.zeros(shape = states.shape) # Create row
+		n_trans_states = np.count_nonzero((states > state + non_transition_bins) | (states < state - non_transition_bins))
+		if n_trans_states != 0:
+			s_trans[(states > state + non_transition_bins) | (states < state - non_transition_bins)] = change/n_trans_states
+			s_trans[states == state] = 1 - change
+		else:
+			s_trans[states == state] = 1
+		trans[k] = s_trans
+				 
+	# Set various values of HMM model  
+	model.transmat_ = np.array(trans)
+	model.means_ = states.reshape(-1,1)
+	model.covars_ = np.array(n_states*[std])
+			
+	# Calculate HMM
+	z = [model.means_[x][0] for x in model.predict(column.reshape(-1,1))]
+	
+	# Overwrite data with new HMM data
+	data[i,:] = np.array(z).astype('uint8')
 np.save(args.Rowfile.replace('.npy', '.hmm.bu.npy'), data)
 
 # Create array to save data
@@ -90,21 +90,21 @@ np.save(args.Rowfile.replace('.npy', '.hmm.bu.npy'), data)
 out_data = np.zeros(shape = (3000,5), dtype = 'uint16') # Initially create an array for 3000 transitions
 transition = 0
 for i, column in enumerate(data):
-    cpos = 0
-    split_data = np.split(column, 1 + np.where(np.diff(column) != 0)[0])
-    for j,d in enumerate(split_data):
-        if j==0:
-            change = 0
-        else:
-            change = abs(split_data[j][2] - d[2])
-        try:
-            out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
-        except IndexError: # numpy array is too small to hold all the data. Resize it
-            out_data = np.resize(out_data, (out_data.shape[0]*5, out_data.shape[1]))
-            out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
+	cpos = 0
+	split_data = np.split(column, 1 + np.where(np.diff(column) != 0)[0])
+	for j,d in enumerate(split_data):
+		if j==0:
+			change = 0
+		else:
+			change = abs(split_data[j][2] - d[2])
+		try:
+			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
+		except IndexError: # numpy array is too small to hold all the data. Resize it
+			out_data = np.resize(out_data, (out_data.shape[0]*5, out_data.shape[1]))
+			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
 
-        cpos = cpos + len(d)
-        transition += 1
+		cpos = cpos + len(d)
+		transition += 1
 out_data = np.delete(out_data, range(transition, out_data.shape[0]), axis = 0)
 np.save(args.Rowfile.replace('.npy', '.hmm.npy'), out_data)
 #subprocess.run(['rm', '-f', args.Rowfile])
