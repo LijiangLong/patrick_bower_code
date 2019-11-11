@@ -95,9 +95,9 @@ class VideoPreparer:
 			
 			for p in processes:
 				p.communicate()
-		print()
 		"""
-		print(print('Combining data into rowfiles,,Time: ' + str(datetime.datetime.now())))
+		print()
+		print('Combining data into rowfiles,,Time: ' + str(datetime.datetime.now()))
 		for row in range(self.videoObj.height):
 			row_file = self.videoObj.localTempDir + str(row) + '.npy'
 			if os.path.isfile(row_file):
@@ -118,12 +118,13 @@ class VideoPreparer:
 				out_data = alldata[row]
 				if os.path.isfile(row_file):
 					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
+					pdb.set_trace()
 				np.save(row_file, out_data)
 
 				# Verify size is right
 				if block + 1 == totalBlocks:
 					assert out_data.shape != (self.videoObj.width, self.HMMsecs)
-			subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
+			#subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
 
 
 	def _calculateHMM(self):
