@@ -18,7 +18,7 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 ad = np.empty(shape = (height, width, args.LastTime - args.FirstTime), dtype = 'uint8')
 
 for i in range(args.FirstTime, args.LastTime):
-	cap.set(cv2.CAP_PROP_POS_FRAMES, int(i*args.FrameRate))
+	cap.set(cv2.CAP_PROP_POS_FRAMES, int(i*args.Framerate))
 	ret, frame = cap.read()
 	if not ret:
 		raise Exception('Cant read frame')
