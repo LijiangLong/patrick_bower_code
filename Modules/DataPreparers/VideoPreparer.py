@@ -106,9 +106,10 @@ class VideoPreparer:
 			data = np.load(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy')
 			for row in range(self.videoObj.height):
 				row_file = self.videoObj.localTempDir + str(row) + '.npy'
+				out_data = data[row]
 				if os.path.isfile(row_file):
-					data = np.concatenate([np.load(row_file),data[row]], axis = 1)
-				np.save(row_file, data)
+					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
+				np.save(row_file, out_data)
 
 		# Verify size is right
 		for row in range(self.videoObj.height):
