@@ -90,7 +90,7 @@ class VideoPreparer:
 				max_frame = min((i+j+1)*self.blocksize, self.HMMsecs)*self.videoObj.framerate
 				
 				arguments = [self.videofile, self.videoObj.framerate, min_frame, max_frame, self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
-				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/Decompress_block.py'] + commands))
+				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/Decompress_block.py'] + arguments))
 			
 			for p in processes:
 				p.communicate()
@@ -106,7 +106,7 @@ class VideoPreparer:
 		# Verify size is right
 		for row in range(self.videoObj.height):
 			data = np.load(self.videoObj.localTempDir + str(row) + '.npy')
-			assert data.shape != (self.videoObj.width, totalSecs)
+			assert data.shape != (self.videoObj.width, self.HMMsecs)
 			#print('Data wrote: ' + str((datetime.datetime.now() - start).seconds) + ' seconds', file = sys.stderr)
 
 	def _calculateHMM(self):
