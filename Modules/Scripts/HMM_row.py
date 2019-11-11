@@ -93,17 +93,16 @@ for i, column in enumerate(data):
 	cpos = 0
 	split_data = np.split(column, 1 + np.where(np.diff(column) != 0)[0])
 	for j,d in enumerate(split_data):
-		pdb.set_trace()
 		if j==0:
 			change = 0
 		else:
-			change = abs(prev_mag - d[2])
+			change = abs(prev_mag - d[0])
 		try:
 			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
 		except IndexError: # numpy array is too small to hold all the data. Resize it
 			out_data = np.resize(out_data, (out_data.shape[0]*5, out_data.shape[1]))
 			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
-		prev_mag = d[2]
+		prev_mag = d[0]
 		cpos = cpos + len(d)
 		transition += 1
 out_data = np.delete(out_data, range(transition, out_data.shape[0]), axis = 0)
