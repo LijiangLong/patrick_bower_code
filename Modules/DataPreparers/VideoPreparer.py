@@ -80,21 +80,27 @@ class VideoPreparer:
 		self.blocksize = 5*60 # Decompress videos in 5 minute chunks
 
 		totalBlocks = math.ceil(self.HMMsecs/(self.blocksize)) #Number of blocks that need to be analyzed for the full video
-		pool = ThreadPool(self.workers) #Create pool of threads for parallel analysis of data
 		print('Decompressing video into 1 second chunks,,Time: ' + str(datetime.datetime.now()))
 		print(str(totalBlocks) + ' total blocks. On block ', end = '', flush = True)
 		for i in range(0, totalBlocks, self.workers):
-			print(str(i) + ',', end = '', flush = True)
+			print(str(i) + '-' + str(i+self.workers) + ',', end = '', flush = True)
+			processes = []
+			for j in range(self.workers):
+				min_frame = (i+j)*self.blocksize*self.videoObj.framerate
+				max_frame = min((i+j+1)*self.blocksize, self.HMMsecs)*self.videoObj.framerate
+				
+				arguments = [self.videofile, self.videoObj.framerate, min_frame, max_frame, self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
+				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/Decompress_block.py'] + commands))
+			
+			for p in processes:
+				p.communicate()
 
-			blocks = list(range(i, min(i + self.workers, totalBlocks)))
-			#print('Minutes since start: ' + str((datetime.datetime.now() - start).seconds/60) + ', Processing blocks: ' + str(blocks[0]) + ' to ' +  str(blocks[-1]), log = False)
-			results = pool.map(self._readBlock, blocks)
-			#print('Data read: ' + str((datetime.datetime.now() - start).seconds) + ' seconds')
+		for block in range(totalBlocks):
+			data = np.load(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy')
 			for row in range(self.videoObj.height):
 				row_file = self.videoObj.localTempDir + str(row) + '.npy'
-				out_data = np.concatenate([results[x][row] for x in range(len(results))], axis = 1)
 				if os.path.isfile(row_file):
-					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
+					out_data = np.concatenate([np.load(row_file),data[row]], axis = 1)
 				np.save(row_file, out_data)
 
 		# Verify size is right
@@ -102,23 +108,6 @@ class VideoPreparer:
 			data = np.load(self.videoObj.localTempDir + str(row) + '.npy')
 			assert data.shape != (self.videoObj.width, totalSecs)
 			#print('Data wrote: ' + str((datetime.datetime.now() - start).seconds) + ' seconds', file = sys.stderr)
-		pool.close() 
-		pool.join() 
-
-	def _readBlock(self, block):
-		min_t = int(block*self.blocksize)
-		max_t = int(min((block+1)*self.blocksize, self.HMMsecs))
-		ad = np.empty(shape = (self.videoObj.height, self.videoObj.width, max_t - min_t), dtype = 'uint8')
-		
-		cap = cv2.VideoCapture(self.videofile)
-		for i in range(max_t - min_t):
-			cap.set(cv2.CAP_PROP_POS_FRAMES, int((i+min_t)*self.videoObj.framerate))
-			ret, frame = cap.read()
-			if not ret:
-				raise Exception('Cant read frame')
-			ad[:,:,i] =  0.2125 * frame[:,:,2] + 0.7154 * frame[:,:,1] + 0.0721 * frame[:,:,0] #opencv does bgr instead of rgb
-		cap.release()
-		return ad 
 
 	def _calculateHMM(self):
 		totalBlocks = math.ceil(self.videoObj.height/self.workers)
