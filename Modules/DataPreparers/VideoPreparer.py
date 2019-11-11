@@ -107,8 +107,8 @@ class VideoPreparer:
 			for row in range(self.videoObj.height):
 				row_file = self.videoObj.localTempDir + str(row) + '.npy'
 				if os.path.isfile(row_file):
-					out_data = np.concatenate([np.load(row_file),data[row]], axis = 1)
-				np.save(row_file, out_data)
+					data = np.concatenate([np.load(row_file),data[row]], axis = 1)
+				np.save(row_file, data)
 
 		# Verify size is right
 		for row in range(self.videoObj.height):
