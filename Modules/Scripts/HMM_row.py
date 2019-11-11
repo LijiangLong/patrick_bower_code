@@ -96,13 +96,13 @@ for i, column in enumerate(data):
 		if j==0:
 			change = 0
 		else:
-			change = abs(split_data[j][2] - d[2])
+			change = abs(prev_mag - d[2])
 		try:
 			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
 		except IndexError: # numpy array is too small to hold all the data. Resize it
 			out_data = np.resize(out_data, (out_data.shape[0]*5, out_data.shape[1]))
 			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
-
+		prev_mag = d[2]
 		cpos = cpos + len(d)
 		transition += 1
 out_data = np.delete(out_data, range(transition, out_data.shape[0]), axis = 0)
