@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import sys
+import sys, pdb
 
 class HMMAnalyzer:
     def __init__(self, filebase):
 
+        # Data is (start_t, end_t, value, row, column)
         self.data = np.load(filebase + '.npy')
 
         with open(filebase + '.txt') as f:
@@ -36,23 +37,9 @@ class HMMAnalyzer:
         #Threshold out timepoints that have too many changes
         time, counts = np.unique(self.data[:,0], return_counts = True)
         threshold = counts[0]*densityFilter/100 # This excludes frames where too many pixels are changing in a frame (i.e. lighting changes)
-        
-        row = 0
-        column = -1
-        allCoords = np.zeros(shape = (int(self.data.shape[0] - self.width*self.height), 4), dtype = 'uint64')
-        i = 0
-        for d in self.data:
-            if d[0] == 0:
-                column+=1
-                if column == self.width:
-                    column = 0
-                    row += 1
-            else:
-                numChanges = counts[np.where(time==d[0])[0][0]]
-                if numChanges < threshold:
-                    allCoords[i] = np.array((d[0], row, column, abs(d[2] - prev_mag)), dtype = 'uint64')
-                    i+=1
-            prev_mag = d[2]
+        badTimes = time[counts>threshold]
+
+        allCoords = self.data[~np.isin(self.data[:,0], badTimes)][:,[0,3,4,5]].astype('uint64')
             
         allCoords = allCoords[allCoords[:,3] > minMagnitude].copy()
         print('DBScanMatrixCreation: ' + str(allCoords.shape[0]) + ' HMM transitions passed magnitude and density filtering criteria', file = sys.stderr)
