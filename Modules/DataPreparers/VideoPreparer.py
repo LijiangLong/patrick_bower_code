@@ -89,7 +89,7 @@ class VideoPreparer:
 				min_frame = (i+j)*self.blocksize*self.videoObj.framerate
 				max_frame = min((i+j+1)*self.blocksize, self.HMMsecs)*self.videoObj.framerate
 				
-				arguments = [self.videofile, self.videoObj.framerate, min_frame, max_frame, self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
+				arguments = [self.videofile, str(self.videoObj.framerate), str(min_frame), str(max_frame), self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
 				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/Decompress_block.py'] + arguments))
 			
 			for p in processes:
