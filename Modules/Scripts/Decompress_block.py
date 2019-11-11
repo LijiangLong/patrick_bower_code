@@ -15,7 +15,7 @@ cap = cv2.VideoCapture(args.Videofile)
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 
-ad = np.empty(shape = (height, width, int((args.Lastframe - args.Firstframe)/args.Framerate)), dtype = 'uint8')
+ad = np.empty(shape = (height, width, args.LastTime - args.FirstTime), dtype = 'uint8')
 
 for i in range(args.Firstframe, args.Lastframe):
 	cap.set(cv2.CAP_PROP_POS_FRAMES, int(i*args.FrameRate))
