@@ -82,7 +82,7 @@ for i, column in enumerate(data): # Iterate through each column
     
     # Overwrite data with new HMM data
     data[i,:] = np.array(z).astype('uint8')
-#np.save(args.Rowfile.replace('.npy', '.hmm.bu.npy'), data)
+np.save(args.Rowfile.replace('.npy', '.hmm.bu.npy'), data)
 
 # Create array to save data
 # In order to save space, we only store when data is the same (first_t, last_t, hmm_state)
@@ -103,4 +103,4 @@ for column in data:
         transition += 1
 out_data = np.delete(out_data, range(transition, out_data.shape[0]), axis = 0)
 np.save(args.Rowfile.replace('.npy', '.hmm.npy'), out_data)
-subprocess.run(['rm', '-f', args.Rowfile])
+#subprocess.run(['rm', '-f', args.Rowfile])
