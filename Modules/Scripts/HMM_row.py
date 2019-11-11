@@ -87,7 +87,7 @@ np.save(args.Rowfile.replace('.npy', '.hmm.bu.npy'), data)
 # Create array to save data
 # In order to save space, we only store when data is the same (first_t, last_t, hmm_state)
 
-out_data = np.zeros(shape = (3000,5), dtype = 'uint16') # Initially create an array for 3000 transitions
+out_data = np.zeros(shape = (3000,6), dtype = 'uint16') # Initially create an array for 3000 transitions
 transition = 0
 for i, column in enumerate(data):
 	cpos = 0
