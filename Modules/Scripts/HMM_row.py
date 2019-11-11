@@ -22,7 +22,7 @@ hmm_window = 60 # Used for reducing the number of states for HMM calculation
 seconds_to_change = 60*30 # Used to determine expectation of transition from one state to another (i.e. how many manipulations occur)
 non_transition_bins = 2 # Parameter to prevent small changes in state
 std = 100 # Standard deviation of data
-row = int(args.Rowfile.split('.')[0])
+row = int(args.Rowfile.split('/')[-1].split('.')[0])
 
 data = np.load(args.Rowfile)
 original_shape = data.shape
