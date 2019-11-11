@@ -102,7 +102,9 @@ class VideoPreparer:
 			row_file = self.videoObj.localTempDir + str(row) + '.npy'
 			if os.path.isfile(row_file):
 				subprocess.run(['rm', '-f', row_file])
+		print('Block: ', end = '', flush = True)
 		for block in range(totalBlocks):
+			print(str(block) + ',', end = '', flush = True)
 			data = np.load(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy')
 			for row in range(self.videoObj.height):
 				row_file = self.videoObj.localTempDir + str(row) + '.npy'
@@ -111,11 +113,10 @@ class VideoPreparer:
 					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
 				np.save(row_file, out_data)
 
-		# Verify size is right
-		for row in range(self.videoObj.height):
-			data = np.load(self.videoObj.localTempDir + str(row) + '.npy')
-			assert data.shape != (self.videoObj.width, self.HMMsecs)
-			#print('Data wrote: ' + str((datetime.datetime.now() - start).seconds) + ' seconds', file = sys.stderr)
+				# Verify size is right
+				if block == totalBlocks - 1:
+					assert out_data.shape != (self.videoObj.width, self.HMMsecs)
+
 
 	def _calculateHMM(self):
 		totalBlocks = math.ceil(self.videoObj.height/self.workers)
