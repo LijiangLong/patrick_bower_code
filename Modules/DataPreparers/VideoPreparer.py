@@ -82,8 +82,10 @@ class VideoPreparer:
 		totalBlocks = math.ceil(self.HMMsecs/(self.blocksize)) #Number of blocks that need to be analyzed for the full video
 		pool = ThreadPool(self.workers) #Create pool of threads for parallel analysis of data
 		print('Decompressing video into 1 second chunks,,Time: ' + str(datetime.datetime.now()))
-
+		print(str(totalBlocks) + ' total blocks. On block ', end = '', flush = True)
 		for i in range(0, totalBlocks, self.workers):
+			print(str(i) + ',', end = '', flush = True)
+
 			blocks = list(range(i, min(i + self.workers, totalBlocks)))
 			#print('Minutes since start: ' + str((datetime.datetime.now() - start).seconds/60) + ', Processing blocks: ' + str(blocks[0]) + ' to ' +  str(blocks[-1]), log = False)
 			results = pool.map(self._readBlock, blocks)
