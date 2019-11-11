@@ -94,6 +94,11 @@ class VideoPreparer:
 				if os.path.isfile(row_file):
 					out_data = np.concatenate([np.load(row_file),out_data], axis = 1)
 				np.save(row_file, out_data)
+
+		# Verify size is right
+		for row in range(self.videoObj.height):
+			data = np.load(self.videoObj.localTempDir + str(row) + '.npy')
+			assert data.shape != (self.videoObj.width, totalSecs)
 			#print('Data wrote: ' + str((datetime.datetime.now() - start).seconds) + ' seconds', file = sys.stderr)
 		pool.close() 
 		pool.join() 
@@ -162,8 +167,10 @@ class VideoPreparer:
 
 		#Calculate clusters in batches to avoid RAM overuse
 		curr_label = 0 #Labels for each batch start from zero - need to offset these 
+		print(str(numBatches) + ' total batches. On batch: ', end = '', flush = True)
 		for i in range(numBatches):
-		 
+		 	print(str(i) + ',', end = '', flush = True)
+
 			min_time, max_time = i*self.projFileManager.delta*self.projFileManager.timeScale*3600, (i+1)*self.projFileManager.delta*self.projFileManager.timeScale*3600 # Have to deal with rescaling of time. 3600 = # seconds in an hour
 			hour_range = np.where((sortData[:,0] > min_time) & (sortData[:,0] <= max_time))
 			min_index, max_index = hour_range[0][0], hour_range[0][-1] + 1
@@ -179,6 +186,7 @@ class VideoPreparer:
 		sortData[:,0] = sortData[:,0]/self.projFileManager.timeScale
 		labeledCoords = np.concatenate((sortData, labels), axis = 1).astype('int64')
 		np.save(self.videoObj.localLabeledCoordsFile, labeledCoords)
+		print('Concatenating and summarizing clusters,,Time: ' + str(datetime.datetime.now())) 
 
 		df = pd.DataFrame(labeledCoords, columns=['T','X','Y','LID'])
 		clusterData = df.groupby('LID').apply(lambda x: pd.Series({
@@ -228,6 +236,8 @@ class VideoPreparer:
 		self.clusterData = clusterData
 
 	def _createAnnotationFiles(self):
+		print('Creating small video clips for classification and manual labeling,,Time: ' + str(datetime.datetime.now())) 
+
 		# Clip creation is super slow so we do it in parallel
 		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
 		self.clusterData['ClipName'] = self.clusterData.apply(lambda row: '__'.join([str(x) for x in [self.lp.projectID, self.videoObj.baseName,row.name,row.N,row.t,row.X,row.Y]]), axis = 1)

@@ -22,7 +22,7 @@ hmm_window = 60 # Used for reducing the number of states for HMM calculation
 seconds_to_change = 60*30 # Used to determine expectation of transition from one state to another (i.e. how many manipulations occur)
 non_transition_bins = 2 # Parameter to prevent small changes in state
 std = 100 # Standard deviation of data
-
+row = int(args.Rowfile.split('.')[0])
 
 data = np.load(args.Rowfile)
 original_shape = data.shape
@@ -87,17 +87,21 @@ np.save(args.Rowfile.replace('.npy', '.hmm.bu.npy'), data)
 # Create array to save data
 # In order to save space, we only store when data is the same (first_t, last_t, hmm_state)
 
-out_data = np.zeros(shape = (3000,3), dtype = 'uint16') # Initially create an array for 3000 transitions
+out_data = np.zeros(shape = (3000,5), dtype = 'uint16') # Initially create an array for 3000 transitions
 transition = 0
-for column in data:
+for i, column in enumerate(data):
     cpos = 0
     split_data = np.split(column, 1 + np.where(np.diff(column) != 0)[0])
-    for d in split_data:
+    for j,d in enumerate(split_data):
+        if j==0:
+            change = 0
+        else:
+            change = abs(split_data[j][2] - d[2])
         try:
-            out_data[transition] = (cpos, cpos + len(d) - 1, d[0])
+            out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
         except IndexError: # numpy array is too small to hold all the data. Resize it
             out_data = np.resize(out_data, (out_data.shape[0]*5, out_data.shape[1]))
-            out_data[transition] = (cpos, cpos + len(d) - 1, d[0])
+            out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
 
         cpos = cpos + len(d)
         transition += 1
