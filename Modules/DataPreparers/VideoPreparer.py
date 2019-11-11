@@ -31,7 +31,7 @@ class VideoPreparer:
 
 	def processVideo(self):
 		self._validateVideo()
-		self._decompressVideo()
+		#self._decompressVideo()
 		self._calculateHMM()
 		self._createClusters()
 		self._createAnnotationFiles()
@@ -82,7 +82,7 @@ class VideoPreparer:
 		totalBlocks = math.ceil(self.HMMsecs/(self.blocksize)) #Number of blocks that need to be analyzed for the full video
 		print('Decompressing video into 1 second chunks,,Time: ' + str(datetime.datetime.now()))
 		print(str(totalBlocks) + ' total blocks. On block ', end = '', flush = True)
-		"""
+		
 		for i in range(0, totalBlocks, self.workers):
 			print(str(i) + '-' + str(i+self.workers) + ',', end = '', flush = True)
 			processes = []
@@ -95,7 +95,7 @@ class VideoPreparer:
 			
 			for p in processes:
 				p.communicate()
-		"""
+		
 		
 		print()
 		print('Combining data into rowfiles,,Time: ' + str(datetime.datetime.now()))
