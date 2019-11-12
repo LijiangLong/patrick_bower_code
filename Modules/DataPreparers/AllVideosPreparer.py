@@ -73,6 +73,7 @@ class AllVideosPreparer():
 		return(self.vp_objs[index].processVideo())
 
 	def predictClusterLabels(self, vModelID):
+		self.mlFileManager.prepareMLVideoClassification(vModelID)
 		ml_obj = MLP(self.projFileManager)
 		ml_obj.predictVideoLabels(self.mlFileManager)
 
