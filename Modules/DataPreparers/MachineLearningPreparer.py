@@ -116,7 +116,8 @@ class MachineLearningPreparer:
 		[outCommand.extend([str(a),str(b)]) for a,b in zip(command.keys(), command.values())] + ['--no_train']
 		
 		outdata = subprocess.run(outCommand, env = trainEnv, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-		print(outdata.stdout)
+		print(outdata.stderr)
+		pdb.set_trace()
 
 		dt = pd.read_csv(self.prFileManager.localMasterDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.videoClasses, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
