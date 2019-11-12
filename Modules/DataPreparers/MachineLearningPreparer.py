@@ -91,7 +91,7 @@ class MachineLearningPreparer:
 		os.makedirs(self.prFileManager.localMasterDir + resultsDirectory) 
 
 		trainEnv = os.environ.copy()
-		trainEnv['CUDA_VISIBLE_DEVICES'] = str(0)
+		trainEnv['CUDA_VISIBLE_DEVICES'] = str(5)
 		command['--result_path'] = resultsDirectory
 
 		#pickle.dump(command, open(self.localOutputDirectory + 'commands.pkl', 'wb'))
