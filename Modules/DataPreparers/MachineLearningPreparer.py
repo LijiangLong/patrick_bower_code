@@ -39,10 +39,10 @@ class MachineLearningPreparer:
 					
 				outDirectory = self.prFileManager.localProcessedClipsDir + label + '/' + clip.replace('.mp4','') + '/'
 
-				shutil.rmtree(outDirectory) if os.path.exists(outDirectory) else None
-				os.makedirs(outDirectory) 
+				#shutil.rmtree(outDirectory) if os.path.exists(outDirectory) else None
+				#os.makedirs(outDirectory) 
 
-				outdata = subprocess.run(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+				#outdata = subprocess.run(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 				#print(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'])
 
 				frames = [x for x in os.listdir(outDirectory) if '.jpg' in x]
@@ -99,7 +99,7 @@ class MachineLearningPreparer:
 		outCommand = []
 		[outCommand.extend([str(a),str(b)]) for a,b in zip(command.keys(), command.values())] + ['--no_train']
 		
-		subprocess.Popen(outCommand, env = trainEnv, stdout = open(localModelDir + resultsDirectory + 'RunningLogOut.txt', 'w'), stderr = open(localModelDir + resultsDirectory + 'RunningLogError.txt', 'w'))
+		subprocess.Popen(outCommand, env = trainEnv, stdout = open(self.mlFileManager.localModelDir + resultsDirectory + 'RunningLogOut.txt', 'w'), stderr = open(localModelDir + resultsDirectory + 'RunningLogError.txt', 'w'))
 
 		dt = pd.read_csv(localModelDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.classes, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
