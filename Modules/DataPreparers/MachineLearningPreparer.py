@@ -74,7 +74,7 @@ class MachineLearningPreparer:
 				print(row.Index + ',' + str(row.MeanR) + ',' + str(row.MeanG) + ',' + str(row.MeanB) + ',' + str(row.StdR) + ',' + str(row.StdG) + ',' + str(row.StdB), file = f)
 
 		with open(self.prFileManager.localMasterDir + 'AnnotationFile.csv', 'w') as f:
-            print('Location,Dataset,Label,MeanID', file = f)
+			print('Location,Dataset,Label,MeanID', file = f)
 			for row in dt.itertuples():
 				print(row.Clip + ',Test,' + label + ',' + dt.MeanID, file = f)
 
