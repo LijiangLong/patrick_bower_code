@@ -69,6 +69,8 @@ class AllVideosPreparer():
 		allClusterData = pd.concat(clusterData)
 		allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
 
+		self.createClusterAnalysisUpdate()
+
 	def parallelVideoProcesser(self, index):
 		return(self.vp_objs[index].processVideo())
 
@@ -76,6 +78,7 @@ class AllVideosPreparer():
 		self.mlFileManager.prepareMLVideoClassification(vModelID)
 		ml_obj = MLP(self.projFileManager)
 		ml_obj.predictVideoLabels(self.mlFileManager)
+		ml_obj.createMachineLearningAnalysisUpdate()
 
 	def createClusterAnalysisUpdate(self):
 		now = datetime.datetime.now()
@@ -88,5 +91,5 @@ class AllVideosPreparer():
 		now = datetime.datetime.now()
 		with open(self.anFileManager.localMasterDir + 'AnalysisUpdate_' + str(now) + '.csv', 'w') as f:
 			print('ProjectID,Type,Version,Date', file = f)
-			print(self.projectID + ',Video,' + os.getenv('USER') + '_' + self.vp_objs[0].__version__ + ',' + str(now), file= f)
+			print(self.projectID + ',MLVideo,' + os.getenv('USER') + '_' + self.vp_objs[0].__version__ + ',' + str(now), file= f)
 		self.anFileManager.uploadAnalysisUpdate('AnalysisUpdate_' + str(now) + '.csv')
