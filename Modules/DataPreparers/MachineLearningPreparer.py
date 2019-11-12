@@ -22,7 +22,7 @@ class MachineLearningPreparer:
 
 	def _identifyVideoClasses(self):
 		self.videoClasses = []
-		with open(self.mlFileManager.localVideosClassesFile) as f:
+		with open(self.mlFileManager.localVideoClassesFile) as f:
 			for line in f:
 				tokens = line.rstrip().split()
 				self.videoClasses.append(tokens[1])
