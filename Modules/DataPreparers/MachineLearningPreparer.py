@@ -1,4 +1,4 @@
-import subprocess, pickle, os, shutil, pdb, scipy
+import subprocess, pickle, os, shutil, pdb, scipy, datetime
 from skimage import io
 import pandas as pd
 
@@ -28,6 +28,7 @@ class MachineLearningPreparer:
 				self.videoClasses.append(tokens[1])
 
 	def _prepareClips(self):
+		print('Converting clips into jpgs and calculating means,,Time: ' + str(datetime.datetime.now())) 
 
 		clips = [x for x in os.listdir(self.prFileManager.localAllClipsDir) if '.mp4' in x]
 		assert len(clips) != 0
@@ -89,6 +90,8 @@ class MachineLearningPreparer:
 
 	def _predictLabels(self):
 
+		print('Predicting labels for each video and merging information into ClusterSummary,,Time: ' + str(datetime.datetime.now())) 
+
 		# Load command file
 		with open(self.mlFileManager.localVideoCommandsFile, 'rb') as pickle_file:
 			command = pickle.load(pickle_file) 
@@ -121,10 +124,10 @@ class MachineLearningPreparer:
 		dt = pd.read_csv(self.prFileManager.localMasterDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.videoClasses, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
 		prediction = pd.concat([softmax.idxmax(axis=1).rename(self.mlFileManager.vModelID + '_pred'), softmax.max(axis=1).rename(self.mlFileManager.vModelID + '_conf')], axis=1)
-
+		prediction['ClipName'] = prediction.apply(lambda row: row.name.split('/')[-1], axis = 1)
 		allClusterData = pd.read_csv(self.prFileManager.localAllLabeledClustersFile, sep = ',')
-		pdb.set_trace()
-		allClusterData = pd.merge(allClusterData, prediction, how = 'left_outer', left_on = 'ClipName', right_on = 'ClipName')
+		allClusterData = pd.merge(allClusterData, prediction, how = 'left', left_on = 'ClipName', right_on = 'ClipName')
 		allClusterData.to_csv(self.prFileManager.localAllLabeledClustersFile, sep = ',')
 
+		print('ML cluster classification complete,,Time: ' + str(datetime.datetime.now())) 
 
