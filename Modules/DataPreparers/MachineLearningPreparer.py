@@ -18,7 +18,6 @@ class MachineLearningPreparer:
 		self._identifyVideoClasses()
 		self._prepareClips()
 		self._predictLabels()
-		return self.predictions
 
 	def _identifyVideoClasses(self):
 		self.videoClasses = []
