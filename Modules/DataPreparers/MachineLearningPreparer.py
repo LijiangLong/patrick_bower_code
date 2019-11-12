@@ -123,8 +123,8 @@ class MachineLearningPreparer:
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
 		prediction = pd.concat([softmax.idxmax(axis=1).rename(self.mlFileManager.vModelID + '_pred'), softmax.max(axis=1).rename(self.mlFileManager.vModelID + '_conf')], axis=1)
 
-		allClusterData = pd.read_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
+		allClusterData = pd.read_csv(self.prFileManager.localAllLabeledClustersFile, sep = ',')
 		allClusterData = pd.merge(allClusterData, prediction, how = 'left_outer', left_on = 'ClipName', right_on = 'ClipName')
-		allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
+		allClusterData.to_csv(self.prFileManager.localAllLabeledClustersFile, sep = ',')
 
 
