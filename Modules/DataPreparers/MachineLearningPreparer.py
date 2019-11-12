@@ -73,6 +73,11 @@ class MachineLearningPreparer:
 			for row in means.itertuples():
 				print(row.Index + ',' + str(row.MeanR) + ',' + str(row.MeanG) + ',' + str(row.MeanB) + ',' + str(row.StdR) + ',' + str(row.StdG) + ',' + str(row.StdB), file = f)
 
+		with open(self.prFileManager.localMasterDir + 'AnnotationFile.csv', 'w') as f:
+            print('Location,Dataset,Label,MeanID', file = f)
+			for row in dt.itertuples():
+				print(row.Clip + ',Test,' + label + ',' + dt.MeanID, file = f)
+
 
 		command = []
 		command += ['python3', self.mlFileManager.localVideoPythonJsonFile]
@@ -111,7 +116,7 @@ class MachineLearningPreparer:
 		outCommand = []
 		[outCommand.extend([str(a),str(b)]) for a,b in zip(command.keys(), command.values())] + ['--no_train']
 		
-		subprocess.Popen(outCommand, env = trainEnv)
+		outdata = subprocess.Popen(outCommand, env = trainEnv, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 
 		dt = pd.read_csv(localModelDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.classes, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
