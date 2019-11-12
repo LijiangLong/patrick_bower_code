@@ -1,4 +1,4 @@
-import subprocess, pickle, os
+import subprocess, pickle, os, shutil
 from skimage import io
 import pandas as pd
 
