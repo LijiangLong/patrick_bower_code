@@ -76,8 +76,7 @@ class MachineLearningPreparer:
 		with open(self.prFileManager.localMasterDir + 'AnnotationFile.csv', 'w') as f:
 			print('Location,Dataset,Label,MeanID', file = f)
 			for row in dt.itertuples():
-				pdb.set_trace()
-				print(row.Clip + ',Test,' + label + ',' + dt.MeanID, file = f)
+				print(row.Clip + ',Test,' + label + ',' + row.MeanID, file = f)
 
 
 		command = []
