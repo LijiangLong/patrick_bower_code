@@ -65,7 +65,6 @@ class MachineLearningPreparer:
 
 
 		dt = pd.read_csv(self.prFileManager.localMasterDir + 'MeansAll.csv', sep = ',')
-		pdb.set_trace()
 		dt['MeanID'] = dt.apply(lambda row: row.Clip.split('__')[0], axis = 1)
 		means = dt.groupby('MeanID').mean()
 
