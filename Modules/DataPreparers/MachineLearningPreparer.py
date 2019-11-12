@@ -121,7 +121,7 @@ class MachineLearningPreparer:
 
 		dt = pd.read_csv(self.prFileManager.localMasterDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.videoClasses, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
-		prediction = pd.concat([softmax.idxmax(axis=1).rename(modelID + '_pred'), softmax.max(axis=1).rename(modelID + '_conf')], axis=1)
+		prediction = pd.concat([softmax.idxmax(axis=1).rename(self.mlFileManager.vModelID + '_pred'), softmax.max(axis=1).rename(self.mlFileManager.vModelID + '_conf')], axis=1)
 
 		allClusterData = pd.read_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
 		allClusterData = pd.merge(allClusterData, prediction, how = 'left_outer', left_on = 'ClipName', right_on = 'ClipName')
