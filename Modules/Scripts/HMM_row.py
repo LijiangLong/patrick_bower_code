@@ -96,7 +96,7 @@ for i, column in enumerate(data):
 		if j==0:
 			change = 0
 		else:
-			change = abs(prev_mag - d[0])
+			change = abs(prev_mag.astype('int16') - d[0].astype('int16'))
 		try:
 			out_data[transition] = (cpos, cpos + len(d) - 1, d[0], row, i, change)
 		except IndexError: # numpy array is too small to hold all the data. Resize it
