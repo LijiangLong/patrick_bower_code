@@ -115,7 +115,7 @@ class MachineLearningPreparer:
 		outCommand = []
 		[outCommand.extend([str(a),str(b)]) for a,b in zip(command.keys(), command.values())] + ['--no_train']
 		
-		outdata = subprocess.Popen(outCommand, env = trainEnv, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+		outdata = subprocess.run(outCommand, env = trainEnv, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		print(outdata.stdout)
 
 		dt = pd.read_csv(self.prFileManager.localMasterDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.videoClasses, skiprows = [0], index_col = 0)
