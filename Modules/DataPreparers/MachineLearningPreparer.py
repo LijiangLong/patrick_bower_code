@@ -68,7 +68,7 @@ class MachineLearningPreparer:
 		dt['MeanID'] = dt.apply(lambda row: row.Clip.split('__')[0], axis = 1)
 		means = dt.groupby('MeanID').mean()
 
-		with open(self.prFileManager.localMasterDir + 'MeansAll.csv', 'w') as f:
+		with open(self.prFileManager.localMasterDir + 'Means.csv', 'w') as f:
 			print('meanID,redMean,greenMean,blueMean,redStd,greenStd,blueStd', file = f)
 			for row in means.itertuples():
 				print(row.Index + ',' + str(row.MeanR) + ',' + str(row.MeanG) + ',' + str(row.MeanB) + ',' + str(row.StdR) + ',' + str(row.StdG) + ',' + str(row.StdB), file = f)
