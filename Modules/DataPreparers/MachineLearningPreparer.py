@@ -63,11 +63,23 @@ class MachineLearningPreparer:
 
 		subprocess.run(['touch', self.prFileManager.localMasterDir + 'cichlids_train_list.txt'])
 
+
+		dt = pd.read_csv(self.prFileManager.localMasterDir + 'MeansAll.csv', sep = ',')
+		dt['MeanID'] = dt.apply(lambda row: row.Clip.split('__')[0])
+		means = dt.groupby('MeanID').mean()
+
+		with open(self.prFileManager.localMasterDir + 'MeansAll.csv', 'w') as f:
+			print('meanID,redMean,greenMean,blueMean,redStd,greenStd,blueStd', file = f)
+			for row in means.itertuples():
+				print(row.Index + ',' + str(row.MeanR) + ',' + str(row.MeanG) + ',' + str(row.MeanB) + ',' + str(row.StdR) + ',' + str(row.StdG) + ',' + str(row.StdB), file = f)
+
+
 		command = []
 		command += ['python3', self.mlFileManager.localVideoPythonJsonFile]
+		command += [self.mlFileManager.localVideoClassesFile]
 		command += [self.prFileManager.localMasterDir + 'cichlids_train_list.txt']
 		command += [self.prFileManager.localMasterDir + 'cichlids_test_list.txt']
-		command += [self.prFileManager.localMasterDir]
+		command += [self.prFileManager.localMasterDir + 'cichlids.json']
 		print(command)
 		subprocess.call(command)
 
