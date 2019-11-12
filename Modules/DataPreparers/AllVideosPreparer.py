@@ -40,7 +40,6 @@ class AllVideosPreparer():
 
 	def prepareAllMLData(self, mlModelID, cluster = True):
 		print('Downloading data necessary for ML analysis of ' + self.projectID + ',,Time: ' + str(datetime.datetime.now()))
-
 		self.projFileManager.prepareMLVideoAnalysis(cluster)
 		self.mlFileManager.prepareMLVideoClassification(mlModelID)
 		self.lp = LP(self.projFileManager.localLogfile)
@@ -48,8 +47,11 @@ class AllVideosPreparer():
 
 	def backupClusterData(self):
 		self.projFileManager.backupClusterAnalysis()
-		self.projFileManager.localDelete()
-		self.anFileManager.deleteAnalysisDir()
+		#self.projFileManager.localDelete()
+		#self.anFileManager.deleteAnalysisDir()
+
+	def backupMLVideoData(self):
+
 
 	def runClusterAnalysis(self, parallel = False):
 		clusterData = []
@@ -70,11 +72,8 @@ class AllVideosPreparer():
 		return(self.vp_objs[index].processVideo())
 
 	def predictClusterLabels(self, vModelID):
-		self.projFileManager.prepareMachineLearningAnalysis()
-		self.mlFileManager.prepareMLVideoClassification(self, vModelID)
 		ml_obj = MLP(self.projFileManager)
 		ml_obj.predictVideoLabels(self.mlFileManager)
-		self.projFileManager.backupMachineLearningAnalysis()
 
 	def createClusterAnalysisUpdate(self):
 		now = datetime.datetime.now()
