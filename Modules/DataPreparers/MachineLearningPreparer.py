@@ -99,7 +99,7 @@ class MachineLearningPreparer:
 		outCommand = []
 		[outCommand.extend([str(a),str(b)]) for a,b in zip(command.keys(), command.values())] + ['--no_train']
 		
-		subprocess.Popen(outCommand, env = trainEnv, stdout = open(self.mlFileManager.localModelDir + resultsDirectory + 'RunningLogOut.txt', 'w'), stderr = open(localModelDir + resultsDirectory + 'RunningLogError.txt', 'w'))
+		subprocess.Popen(outCommand, env = trainEnv)
 
 		dt = pd.read_csv(localModelDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.classes, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
