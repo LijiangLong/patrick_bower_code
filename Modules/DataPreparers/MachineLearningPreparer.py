@@ -52,8 +52,8 @@ class MachineLearningPreparer:
 				except AttributeError:
 					self.nFrames = len(frames)
 
-					with open(outDirectory + 'n_frames', 'w') as i:
-						print(str(self.nFrames), file = i)
+				with open(outDirectory + 'n_frames', 'w') as i:
+					print(str(self.nFrames), file = i)
 
 				img = io.imread(outDirectory + frames[0])
 				mean = img.mean(axis = (0,1))
@@ -101,6 +101,7 @@ class MachineLearningPreparer:
 		command['--annotation_file'] = self.prFileManager.localMasterDir + 'AnnotationFile.csv'
 		command['--annotation_path'] = 'cichlids.json'
 		command['--batch_size'] = str(int(int(command['--batch_size'])*2))
+		command['--video_path'] = 'AllClips'
 
 		resultsDirectory = 'prediction/'
 		shutil.rmtree(self.prFileManager.localMasterDir + resultsDirectory) if os.path.exists(self.prFileManager.localMasterDir + resultsDirectory) else None
@@ -117,7 +118,6 @@ class MachineLearningPreparer:
 		
 		outdata = subprocess.run(outCommand, env = trainEnv, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		print(outdata.stderr)
-		pdb.set_trace()
 
 		dt = pd.read_csv(self.prFileManager.localMasterDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.videoClasses, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
