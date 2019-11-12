@@ -85,7 +85,6 @@ class MachineLearningPreparer:
 		command += [self.prFileManager.localMasterDir + 'cichlids_train_list.txt']
 		command += [self.prFileManager.localMasterDir + 'cichlids_test_list.txt']
 		command += [self.prFileManager.localMasterDir + 'cichlids.json']
-		print(command)
 		subprocess.call(command)
 
 	def _predictLabels(self):
@@ -124,6 +123,7 @@ class MachineLearningPreparer:
 		prediction = pd.concat([softmax.idxmax(axis=1).rename(self.mlFileManager.vModelID + '_pred'), softmax.max(axis=1).rename(self.mlFileManager.vModelID + '_conf')], axis=1)
 
 		allClusterData = pd.read_csv(self.prFileManager.localAllLabeledClustersFile, sep = ',')
+		pdb.set_trace()
 		allClusterData = pd.merge(allClusterData, prediction, how = 'left_outer', left_on = 'ClipName', right_on = 'ClipName')
 		allClusterData.to_csv(self.prFileManager.localAllLabeledClustersFile, sep = ',')
 
