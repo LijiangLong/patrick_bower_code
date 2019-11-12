@@ -37,7 +37,10 @@ class MachineLearningPreparer:
 			for clip in clips:
 				label = self.videoClasses[0] # Need to temporarily assign the clip to a label - just pick the first
 					
-				outDirectory = self.prFileManager.localProcessedClipsDir + label + clip.replace('.mp4','') + '/'
+				outDirectory = self.prFileManager.localProcessedClipsDir + label + '/' + clip.replace('.mp4','') + '/'
+
+				shutil.rmtree(outDirectory) if os.path.exists(outDirectory) else None
+				os.makedirs(outDirectory) 
 
 				subprocess.run(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'])
 				print(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'])
