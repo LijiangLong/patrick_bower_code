@@ -76,6 +76,7 @@ class MachineLearningPreparer:
 		with open(self.prFileManager.localMasterDir + 'AnnotationFile.csv', 'w') as f:
 			print('Location,Dataset,Label,MeanID', file = f)
 			for row in dt.itertuples():
+				pdb.set_trace()
 				print(row.Clip + ',Test,' + label + ',' + dt.MeanID, file = f)
 
 
@@ -118,7 +119,7 @@ class MachineLearningPreparer:
 		
 		outdata = subprocess.Popen(outCommand, env = trainEnv, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 
-		dt = pd.read_csv(localModelDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.classes, skiprows = [0], index_col = 0)
+		dt = pd.read_csv(self.prFileManager.localMasterDir + '/prediction/ConfidenceMatrix.csv', header = None, names = ['Filename'] + self.classes, skiprows = [0], index_col = 0)
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
 		prediction = pd.concat([softmax.idxmax(axis=1).rename(modelID + '_pred'), softmax.max(axis=1).rename(modelID + '_conf')], axis=1)
 
