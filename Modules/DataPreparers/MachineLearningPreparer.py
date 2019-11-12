@@ -1,4 +1,4 @@
-import subprocess, pickle, os, shutil, pdb
+import subprocess, pickle, os, shutil, pdb, scipy
 from skimage import io
 import pandas as pd
 
@@ -107,7 +107,7 @@ class MachineLearningPreparer:
 		os.makedirs(self.prFileManager.localMasterDir + resultsDirectory) 
 
 		trainEnv = os.environ.copy()
-		trainEnv['CUDA_VISIBLE_DEVICES'] = str(5)
+		trainEnv['CUDA_VISIBLE_DEVICES'] = str(6)
 		command['--result_path'] = resultsDirectory
 
 		#pickle.dump(command, open(self.localOutputDirectory + 'commands.pkl', 'wb'))
