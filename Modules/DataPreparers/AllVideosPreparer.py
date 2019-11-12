@@ -51,7 +51,7 @@ class AllVideosPreparer():
 		#self.anFileManager.deleteAnalysisDir()
 
 	def backupMLVideoData(self):
-
+		pass
 
 	def runClusterAnalysis(self, parallel = False):
 		clusterData = []
