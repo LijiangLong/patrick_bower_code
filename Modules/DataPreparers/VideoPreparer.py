@@ -193,7 +193,7 @@ class VideoPreparer:
 			sub_label[sub_label != -1] += curr_label
 			labels[min_index:max_index,0] = sub_label
 			curr_label += new_labels
-
+		print()
 		# Concatenate and save information
 		sortData[:,0] = sortData[:,0]/self.projFileManager.timeScale
 		labeledCoords = np.concatenate((sortData, labels), axis = 1).astype('int64')

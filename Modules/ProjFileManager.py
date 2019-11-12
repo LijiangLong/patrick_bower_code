@@ -46,6 +46,7 @@ class ProjFileManager():
 		self._createDirectory(self.localAllClipsDir)
 		self._createDirectory(self.localManualLabelClipsDir)
 		self._createDirectory(self.localManualLabelFramesDir)
+		self._createDirectory(self.localAnalysisDir)
 
 		self._downloadFile(self.logfile)
 		self._downloadDirectory(self.videoDir)
