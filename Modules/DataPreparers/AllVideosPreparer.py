@@ -3,6 +3,7 @@ import datetime
 from Modules.LogParser import LogParser as LP
 from Modules.FileManager import FileManager as FM
 from Modules.DataPreparers.VideoPreparer import VideoPreparer as VP
+from Modules.DataPreparers.MachineLearningPreparer import MachineLearningPreparer as MLP
 
 class AllVideosPreparer():
 	# This class takes in directory information and a logfile containing depth information and performs the following:
