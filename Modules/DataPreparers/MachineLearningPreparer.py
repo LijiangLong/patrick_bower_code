@@ -40,10 +40,10 @@ class MachineLearningPreparer:
 					
 				outDirectory = self.prFileManager.localProcessedClipsDir + label + '/' + clip.replace('.mp4','') + '/'
 
-				#shutil.rmtree(outDirectory) if os.path.exists(outDirectory) else None
-				#os.makedirs(outDirectory) 
+				shutil.rmtree(outDirectory) if os.path.exists(outDirectory) else None
+				os.makedirs(outDirectory) 
 
-				#outdata = subprocess.run(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+				outdata = subprocess.run(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 				#print(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'])
 
 				frames = [x for x in os.listdir(outDirectory) if '.jpg' in x]

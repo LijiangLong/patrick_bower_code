@@ -31,7 +31,7 @@ class VideoPreparer:
 
 	def processVideo(self):
 		self._validateVideo()
-		#self._decompressVideo()
+		self._decompressVideo()
 		self._calculateHMM()
 		self._createClusters()
 		self._createAnnotationFiles()
