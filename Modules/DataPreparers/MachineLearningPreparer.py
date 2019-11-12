@@ -40,6 +40,7 @@ class MachineLearningPreparer:
 				outDirectory = self.prFileManager.localProcessedClipsDir + label + clip.replace('.mp4','') + '/'
 
 				subprocess.run(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'])
+				print(['ffmpeg', '-i', self.prFileManager.localAllClipsDir + clip, outDirectory + 'image_%05d.jpg'])
 
 				frames = [x for x in os.listdir(outDirectory) if '.jpg' in x]
 				try:
