@@ -1,8 +1,7 @@
 import scipy.signal
 import numpy as np
-import cv2, datetime, pdb, os
-from Modules.LogParser import LogParser as LP
-from Modules.FileManager import FileManager as FM
+import cv2, pdb, os
+from Modules.DataObjects.LogParser import LogParser as LP
 
 class DepthPreparer:
 	# This class takes in directory information and a logfile containing depth information and performs the following:
@@ -11,32 +10,22 @@ class DepthPreparer:
 	# 3. Automatically identifies bower location
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
-	def __init__(self, projectID):
-		self.__version__ = '1.0.0'
-
-		self.projectID = projectID
-		self.fileManager = FM()
-		self.anFileManager = self.fileManager.retAnFileManager()
-		self.projFileManager = self.fileManager.retProjFileManager(projectID)
+	def __init__(self, projFileManager, workers):
 		
+		self.__version__ = '1.0.0'
+		self.projFileManager = projFileManager
+		self.lp = LP(projFileManager.localLogfile)
 
-	def runAnalysis(self):
-		#self.prepData()
-		#self.createSmoothedArray()
-		#self.createRGBVideo()
-		self.createAnalysisUpdate()
-		self.backupData()
-		self.projFileManager.localDelete()
-		self.anFileManager.deleteAnalysisDir()
+	def validateInputData(self):
+		assert os.path.exists(self.projFileManager.localFramesDir)
+		for frame in self.lp.frames:
+			assert os.path.exists(self.projFileManager.localMasterDir + frame.npy_file)
+			assert os.path.exists(self.projFileManager.localMasterDir + frame.pic_file)
+		assert os.path.exists(self.projFileManager.localTroubleshootingDir)
+		assert os.path.exists(self.projFileManager.localAnalysisDir)
 
-	def prepData(self):
-		self.projFileManager.prepareDepthAnalysis()
-		self.lp = LP(self.projFileManager.localLogfile)
-
-	def backupData(self):
-		self.projFileManager.backupDepthAnalysis()
-		self.projFileManager.localDelete()
-		self.anFileManager.deleteAnalysisDir()
+		self.uploads = [(self.projFileManager.localTroubleshootingDir, self.projFileManager.cloudTroubleshootingDir), 
+						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir)]
 
 
 	def createSmoothedArray(self, totalGoodData = 0.3, minGoodData = 0.5, minUnits = 5, tunits = 71, order = 4):
@@ -103,11 +92,5 @@ class DepthPreparer:
 
 		outMovie.release()
 
-	def createAnalysisUpdate(self):
-		now = datetime.datetime.now()
-		with open(self.anFileManager.localMasterDir + 'AnalysisUpdate_' + str(now) + '.csv', 'w') as f:
-			print('ProjectID,Type,Version,Date', file = f)
-			print(self.projectID + ',Depth,' + os.getenv('USER') + '_' + self.__version__ + ',' + str(now), file= f)
-		self.anFileManager.uploadAnalysisUpdate('AnalysisUpdate_' + str(now) + '.csv')
 
 

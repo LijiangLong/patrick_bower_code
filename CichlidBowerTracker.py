@@ -1,36 +1,6 @@
-import argparse, subprocess, collections, os, pdb, datetime
-import pandas as pd
-from Modules.MasterAnalysisSummary import MasterAnalysisSummary as MAS
-from Modules.DataPreparers.CropPreparer import CropPreparer as CP
-from Modules.DataPreparers.DepthPreparer import DepthPreparer as DP
-from Modules.DataPreparers.AllVideosPreparer import AllVideosPreparer as AVP
-
-
-
-parser = argparse.ArgumentParser()
-subparsers = parser.add_subparsers(help='Available Commands', dest='command')
-
-trackerParser = subparsers.add_parser('CollectData', help='This command runs on Raspberry Pis to collect depth and RGB data')
-
-summarizeParser = subparsers.add_parser('UpdateAnalysisSummary', help='This command identifies any new projects that can be analyzed and merges any updates that are new')
-
-prepParser = subparsers.add_parser('ManualPrep', help='This command takes user interaction to identify depth crops, RGB crops, and register images')
-prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
-prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
-
-depthParser = subparsers.add_parser('DepthPreparer', help='This command takes prepares the depth data for downstream analysis')
-depthParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
-depthParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
-
-prepParser = subparsers.add_parser('VideoPreparer', help='This command takes prepares the video data for downstream analysis')
-prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
-prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
-prepParser.add_argument('-c', '--noCluster', action = 'store_true', help = 'Use this flag if you do not want to do cluster analysis (assumes it is already done)')
-prepParser.add_argument('-m', '--MachineLearning', type = str, help = 'Use this flag if you want to perform machine learning - requres Machine learning model')
-prepParser.add_argument('-P', '--PACE', action = 'store_true', help = 'Use this flag if you are running this analysis on the PACE biocluster')
-
-
-args = parser.parse_args()
+import argparse, os, pdb, sys
+from Modules.DataPreparers.AnalysisPreparer import AnalysisPreparer as AP
+from Modules.DataPreparers.ProjectPreparer import ProjectPreparer as PP
 
 def parseProjects(args, analysisType):
 
@@ -67,12 +37,38 @@ def updateAnalysisSummary():
 	masObj.uploadAnalysisDir()
 	masObj.deleteAnalysisDir()
 
+
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(help='Available Commands', dest='command')
+
+trackerParser = subparsers.add_parser('CollectData', help='This command runs on Raspberry Pis to collect depth and RGB data')
+
+summarizeParser = subparsers.add_parser('UpdateAnalysisSummary', help='This command identifies any new projects that can be analyzed and merges any updates that are new')
+
+prepParser = subparsers.add_parser('ManualPrep', help='This command takes user interaction to identify depth crops, RGB crops, and register images')
+prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
+prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
+
+projectParser = subparsers.add_parser('ProjectAnalysis', help='This command performs a single type of analysis of the project. It is meant to be chained together to perform the entire analysis')
+projectParser.add_argument('AnalysisType', type = str, choices=['Download','Depth','Cluster','MLClassification', 'MLFishDetection','Backup'], help = 'What type of analysis to perform')
+projectParser.add_argument('ProjectID', type = str, help = 'Which projectID you want to identify')
+projectParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
+projectParser.add_argument('-g', '--GPUs', type = int, help = 'Use if you want to control how many GPUs this analysis uses', default = 1)
+projectParser.add_argument('-d', '--DownloadOnly', action = 'store_true', help = 'Use if you only want to download the data for a specific analysis', default = 1)
+
+totalProjectsParser = subparsers.add_parser('TotalProjectAnalysis', help='This command runs the entire pipeline on list of projectIDs')
+totalProjectsParser.add_argument('Computer', type = str, choices=['SRG','PACE'], help = 'What computer are you running this analysis from?')
+totalProjectsParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
+
+args = parser.parse_args()
+
 if args.command is None:
 	parser.print_help()
 
 if args.command == 'UpdateAnalysisSummary':
 	
-	updateAnalysisSummary()
+	ap_obj = AP()
+	ap_obj.updateAnalysisFile()
 
 if args.command == 'ManualPrep':
 	
@@ -81,38 +77,42 @@ if args.command == 'ManualPrep':
 	print(projects)
 
 	for projectID in projects:
-		cp_obj = CP(projectID)
-		cp_obj.prepData()
+		pp_obj = PP(args.ProjectID, args.Workers)
+		pp_obj.runPrepAnalysis()
 		
 	updateAnalysisSummary()
 
-if args.command == 'DepthPreparer':
-	projects = parseProjects(args, 'Depth')
-	print('Will build DepthAnalysis files for the following projects:' )
-	print(projects)
+if args.command == 'ProjectAnalysis':
 
-	for projectID in projects:
-		dp_obj = DP(projectID)
-		dp_obj.runAnalysis()
+	if args.DownloadOnly and args.AnalysisType in ['Download','Backup']:
+		print('DownloadOnly flag cannot be used with Download or Backup AnalysisType')
+		sys.exit()
 
-	updateAnalysisSummary()
+	args.ProjectIDs = [args.ProjectID] # format that parseProjects expects
+	projects = parseProjects(args, 'Prep')
 
-if args.command == 'VideoPreparer':
-	projects = parseProjects(args, 'Video')
-	print('Will build VideoAnalysis files for the following projects:' )
-	print(projects)
+	pp_obj = PP(args.ProjectID, args.Workers)
 
-	for projectID in projects:
-		avp_obj = AVP(projectID)
-		if not args.noCluster:
-			pass
-			avp_obj.prepareAllClusterData()
-		if args.MachineLearning is not None:
-			avp_obj.prepareAllMLData(args.MachineLearning, cluster = False)
-		if not args.noCluster:
-			avp_obj.runClusterAnalysis()
-		if args.MachineLearning is not None:
-			avp_obj.predictClusterLabels(args.MachineLearning)
+	if args.AnalysisType == 'Download' or args.DownloadOnly:
+		pp_obj.downloadData(args.AnalysisType)
+
+	elif args.AnalysisType == 'Depth':
+		pp_obj.runDepthAnalysis()
+
+	elif args.AnalysisType == 'Cluster':
+		pp_obj.runClusterAnalysis()
+
+	elif args.AnalysisType == 'MLClassification':
+		pp_obj.runMLCllasification()
+
+	elif args.AnalysisType == 'MLFishDetection':
+		pp_obj.runMLFishDetection()
+
+	elif args.AnalysisType == 'Backup':
+		pp_obj.backupAnalysis()
+
+if args.command == 'TotalProjectAnalysis':
+	projects = parseProjects(args, )
 
 
 
