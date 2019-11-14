@@ -8,11 +8,9 @@ class ProjFileManager():
 		self.localMasterDir = localMasterDir + projectID + '/'
 		self.cloudMasterDir = cloudMasterDir + projectID + '/'
 		
-
 		self._createFileDirectoryNames()		
 		self._createParameters()
 
-		self.errorLog = open(self.localMasterDir + 'ErrorLog.txt', 'a')
 
 	def downloadData(self, dtype):
 
@@ -20,7 +18,7 @@ class ProjFileManager():
 			self._createDirectory(self.localMasterDir)
 			self._downloadDirectory('')
 			self._createDirectory(self.localAnalysisDir)
-			self._createDirectory(self.localFigureDir)
+			self._createDirectory(self.localFiguresDir)
 			self._createDirectory(self.localTempDir)
 			self._createDirectory(self.localTroubleshootingDir)
 			self._createDirectory(self.localAllClipsDir)
@@ -33,7 +31,7 @@ class ProjFileManager():
 			self._downloadDirectory(self.prepDir)
 			self._createDirectory(self.localMasterDir)
 			self._createDirectory(self.localAnalysisDir)
-			self._createDirectory(self.localFigureDir)
+			self._createDirectory(self.localFiguresDir)
 
 		elif dtype == 'Depth':
 			self._createDirectory(self.localMasterDir)
@@ -46,7 +44,7 @@ class ProjFileManager():
 			self._downloadFile(self.logfile)
 			self._downloadDirectory(self.videoDir)
 			self._createDirectory(self.localAnalysisDir)
-			self._createDirectory(self.localFigureDir)
+			self._createDirectory(self.localFiguresDir)
 			self._createDirectory(self.localTempDir)
 			self._createDirectory(self.localTroubleshootingDir)
 			self._createDirectory(self.localAllClipsDir)
@@ -108,9 +106,11 @@ class ProjFileManager():
 		# Directories created by analysis scripts
 		self.analysisDir = 'MasterAnalysisFiles/'
 		self.localAnalysisDir = self.localMasterDir + 'MasterAnalysisFiles/'
-		
+		self.cloudAnalysisDir = self.cloudMasterDir + 'MasterAnalysisFiles/'
+
 		self.figureDir = 'Figures/'
-		self.localFigureDir = self.localMasterDir + 'Figures/'
+		self.cloudFiguresDir = self.cloudMasterDir + 'Figures/'
+		self.localFiguresDir = self.localMasterDir + 'Figures/'
 		self.allClipsDir = 'AllClips/'
 		self.localAllClipsDir = self.localMasterDir + 'AllClips/'
 		self.processedClipDir = 'ProcessedClips/'
@@ -121,6 +121,7 @@ class ProjFileManager():
 		self.localManualLabelFramesDir = self.localMasterDir + 'MLFrames/'
 
 		self.troubleshootingDir = 'Troubleshooting/'
+		self.cloudTroubleshootingDir = self.cloudMasterDir + 'Troubleshooting/'
 		self.localTroubleshootingDir = self.localMasterDir + 'Troubleshooting/'
 		self.tempDir = 'Temp/'
 		self.localTempDir = self.localMasterDir + 'Temp/'
@@ -141,7 +142,7 @@ class ProjFileManager():
 		self.localRawDepthFile = self.localTroubleshootingDir + 'rawDepthData.npy'
 		self.localInterpDepthFile = self.localTroubleshootingDir + 'interpDepthData.npy'
 
-		self.localPrepSummaryFigure = self.localFigureDir + 'PrepSummary.pdf' 
+		self.localPrepSummaryFigure = self.localFiguresDir + 'PrepSummary.pdf' 
 
 		self.localAllLabeledClustersFile = self.localAnalysisDir + 'AllLabeledClusters.csv'
 
@@ -186,7 +187,7 @@ class ProjFileManager():
 			os.makedirs(directory)
 
 	def _downloadFile(self, dfile):
-		subprocess.call(['rclone', 'copy', self.cloudMasterDir + dfile, self.localMasterDir], stderr = self.errorLog)
+		subprocess.call(['rclone', 'copy', self.cloudMasterDir + dfile, self.localMasterDir])
 		if not os.path.exists(self.localMasterDir + dfile):
 			raise FileNotFoundError('Unable to download ' + dfile + ' from ' + self.cloudMasterDir)
 
@@ -194,17 +195,17 @@ class ProjFileManager():
 
 		# First try to download tarred Directory
 		tar_directory = directory[:-1] + '.tar'
-		subprocess.run(['rclone', 'copy', self.cloudMasterDir + tar_directory, self.localMasterDir], stderr = self.errorLog)
+		output = subprocess.run(['rclone', 'copy', self.cloudMasterDir + tar_directory, self.localMasterDir], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
 		if os.path.exists(self.localMasterDir + tar_directory):
 			print(['tar', '-xvf', self.localMasterDir + tar_directory, '-C', self.localMasterDir])
-			subprocess.run(['tar', '-xvf', self.localMasterDir + tar_directory, '-C', self.localMasterDir], stderr = self.errorLog)
+			output = subprocess.run(['tar', '-xvf', self.localMasterDir + tar_directory, '-C', self.localMasterDir], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
 			if not os.path.exists(self.localMasterDir + directory):
 				raise FileNotFoundError('Unable to untar ' + tar_directory)
 			else:
 				subprocess.run(['rm', '-f', self.localMasterDir + tar_directory])
 
 		else:
-			subprocess.run(['rclone', 'copy', self.cloudMasterDir + directory, self.localMasterDir + directory], stderr = self.errorLog)
+			output = subprocess.run(['rclone', 'copy', self.cloudMasterDir + directory, self.localMasterDir + directory], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
 			if not os.path.exists(self.localMasterDir + directory):
 				raise FileNotFoundError('Unable to download ' + directory + ' from ' + self.cloudMasterDir)
 
@@ -212,7 +213,7 @@ class ProjFileManager():
 		if tar:
 			if directory[-1] == '/':
 				directory = directory[:-1]
-			subprocess.run(['tar', '-cvf', self.localMasterDir + directory + '.tar', '-C', self.localMasterDir, directory], stderr = self.errorLog)
+			subprocess.run(['tar', '-cvf', self.localMasterDir + directory + '.tar', '-C', self.localMasterDir, directory])
 			command = ['rclone', 'copy', self.localMasterDir + directory + '.tar', self.cloudMasterDir, '--exclude', '.DS_Store']
 		else:
 			command = ['rclone', 'copy', self.localMasterDir + directory, self.cloudMasterDir + directory, '--exclude', '.DS_Store']

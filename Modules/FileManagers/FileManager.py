@@ -101,7 +101,6 @@ class FileManager():
 			command = ['rclone', 'copy', directory1 +'.tar', directory2]
 		else:
 			command = ['rclone', 'copy', directory1, directory2]
-	
 		output = subprocess.run(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, encoding = 'utf-8')
 		if output.stderr != '':
 			print(command)

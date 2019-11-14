@@ -22,25 +22,20 @@ class PrepPreparer:
 		assert os.path.exists(self.projFileManager.localFiguresDir)
 		assert os.path.exists(self.projFileManager.localAnalysisDir)
 
-		self.uploads = [(self.projFileManager.localFiguresDir, self.projFileManager.cloudFiguresDir), 
-						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir)]
+		self.uploads = [(self.projFileManager.localFiguresDir, self.projFileManager.cloudFiguresDir, '0'), 
+						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir, '0')]
 
 	def prepData(self):
-		self.projFileManager.prepareCropAnalysis()
 		self._identifyTray()
 		self._cropVideo()
 		self._registerDepthCamera()
 		self._summarizePrep()
-		self._createAnalysisUpdate()
-		self.projFileManager.backupCropAnalysis()
-		self.projFileManager.localDelete()
-		self.anFileManager.deleteAnalysisDir()
 
 	def _identifyTray(self, thresh = 10):
 
 		firstFrame = np.load(self.projFileManager.localFirstFrame)
 		lastFrame = np.load(self.projFileManager.localLastFrame)
-		depthRGB = cv2.imread(self.projFileManager.localPiRGB)
+		depthRGB = cv2.imread(self.projFileManager.localDepthRGB)
 
 		# Create color image of depth change
 		cmap = plt.get_cmap('jet')
@@ -239,11 +234,5 @@ class PrepPreparer:
 
 		fig.savefig(self.projFileManager.localPrepSummaryFigure, dpi=300)
 
-		plt.show()
+		#plt.show()
 
-	def _createAnalysisUpdate(self):
-		now = datetime.datetime.now()
-		with open(self.anFileManager.localMasterDir + 'AnalysisUpdate_' + str(now) + '.csv', 'w') as f:
-			print('ProjectID,Type,Version,Date', file = f)
-			print(self.projectID + ',Prep,' + os.getenv('USER') + '_' + self.__version__ + ',' + str(now), file= f)
-		self.anFileManager.uploadAnalysisUpdate('AnalysisUpdate_' + str(now) + '.csv')

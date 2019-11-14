@@ -8,12 +8,24 @@ class AnalysisPreparer:
 		self.fileManager = FM()
 		self.projectTypes = ['Prep', 'Depth', 'Cluster', 'MLCluster', 'MLObject', 'Figures']
 
-	def updateAnalysisFile(self):
+	def updateAnalysisFile(self, newProjects = True, projectSummary = True):
 		self._loadAnalysisDir()
-		self._identifyNewProjects()
+		if newProjects:
+			self._identifyNewProjects()
 		self._mergeUpdates()
-		self._createProjectsSummary()
+		if projectSummary:
+			self._createProjectsSummary()
 		self.fileManager.uploadData(self.fileManager.localAnalysisSummaryFile, self.fileManager.localAnalysisLogDir, False)
+
+	def checkProjects(self, projects):
+		self._loadAnalysisDir()
+		self._createProjectsSummary(print_screen = False)
+		badProject = False
+		for project in projects:
+			if project not in self.info['All']:
+				print(project + ' not a valid project')
+				badProject = True
+		return badProject
 
 	def _loadAnalysisDir(self):
 		self.fileManager.downloadDirectory(self.fileManager.analysisDir)
@@ -92,7 +104,7 @@ class AnalysisPreparer:
 			return
 		updateDTs = []
 		for update in updateFiles:
-			updateDTs.append(pd.read_csv(self.anFileManager.localMasterDir + update, sep = ','))
+			updateDTs.append(pd.read_csv(self.fileManager.localAnalysisLogDir + update, sep = ','))
 		allUpdates = pd.concat(updateDTs)
 		allUpdates.Date = pd.to_datetime(allUpdates.Date, format = '%Y-%m-%d %H:%M:%S.%f')
 		allUpdates = allUpdates.sort_values(['ProjectID', 'Date']).groupby(['ProjectID','Type']).last()
@@ -102,8 +114,8 @@ class AnalysisPreparer:
 
 		self.anDT.to_excel(self.fileManager.localAnalysisSummaryFile, sheet_name = 'Master', index = True)
 		for update in updateFiles:
-			subprocess.run(['rm', '-f', self.anFileManager.localMasterDir + update])
-			subprocess.run(['rclone', 'delete', self.anFileManager.cloudMasterDir + update])
+			subprocess.run(['rm', '-f', self.fileManager.localAnalysisLogDir + update])
+			subprocess.run(['rclone', 'delete', self.fileManager.cloudAnalysisLogDir + update])
 
 
 	def _createProjectsSummary(self, print_screen = True):

@@ -47,7 +47,7 @@ summarizeParser = subparsers.add_parser('UpdateAnalysisSummary', help='This comm
 
 prepParser = subparsers.add_parser('ManualPrep', help='This command takes user interaction to identify depth crops, RGB crops, and register images')
 prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
-prepParser.add_argument('-n', '--Number', type = int, help = 'Use this flag if you only want to analyze a certain number of strains before quitting')
+prepParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
 
 projectParser = subparsers.add_parser('ProjectAnalysis', help='This command performs a single type of analysis of the project. It is meant to be chained together to perform the entire analysis')
 projectParser.add_argument('AnalysisType', type = str, choices=['Download','Depth','Cluster','MLClassification', 'MLFishDetection','Backup'], help = 'What type of analysis to perform')
@@ -70,19 +70,20 @@ if args.command == 'UpdateAnalysisSummary':
 	ap_obj = AP()
 	ap_obj.updateAnalysisFile()
 
-if args.command == 'ManualPrep':
+elif args.command == 'ManualPrep':
 	
-	projects = parseProjects(args, 'Prep')
-	print('Will identify crop and registration for the following projects:' )
-	print(projects)
+	ap_obj = AP()
+	if ap_obj.checkProjects(args.ProjectIDs):
+		sys.exit()
 
-	for projectID in projects:
-		pp_obj = PP(args.ProjectID, args.Workers)
+	for projectID in args.ProjectIDs:
+		pp_obj = PP(projectID, args.Workers)
 		pp_obj.runPrepAnalysis()
 		
-	updateAnalysisSummary()
+	#pp_obj.backupAnalysis()
+	ap_obj.updateAnalysisFile(newProjects = False, projectSummary = False)
 
-if args.command == 'ProjectAnalysis':
+elif args.command == 'ProjectAnalysis':
 
 	if args.DownloadOnly and args.AnalysisType in ['Download','Backup']:
 		print('DownloadOnly flag cannot be used with Download or Backup AnalysisType')

@@ -1,4 +1,4 @@
-import datetime, os
+import datetime, os, subprocess
 
 from Modules.FileManagers.FileManager import FileManager as FM
 from Modules.DataPreparers.PrepPreparer import PrepPreparer as PrP
@@ -15,7 +15,7 @@ class ProjectPreparer():
 		self.workers = workers
 		self.fileManager = FM()
 		self.projFileManager = self.fileManager.retProjFileManager(projectID) 
-		self.mlFileManager = self.fileManager.retMLFileManager(projectID) 
+		self.mlFileManager = self.fileManager.retMLFileManager() 
 
 	def downloadData(self, dtype):
 		self.fileManager.createDirs()
@@ -24,11 +24,15 @@ class ProjectPreparer():
 			self.mlFileManager.downloadData()
 
 	def runPrepAnalysis(self):
+		self.fileManager.createDirs()
+		self.projFileManager.downloadData('Prep')
 		prp_obj = PrP(self.projFileManager)
 		prp_obj.validateInputData()
 		prp_obj.prepData()
 		self.createUploadFile(prp_obj.uploads)
 		self.createAnalysisUpdate('Prep', prp_obj)
+		self.backupAnalysis()
+		#self.localDelete()
 
 	def runDepthAnalysis(self):
 		dp_obj = DP(self.projFileManager, self.workers)
@@ -60,28 +64,34 @@ class ProjectPreparer():
 
 		uploadFiles = [x for x in os.listdir(self.fileManager.localUploadDir) if 'UploadData' in x]
 
-		for file in uploadFiles:
-			with open(uFile) as f:
+		for uFile in uploadFiles:
+			with open(self.fileManager.localUploadDir + uFile) as f:
 				line = next(f)
 				for line in f:
-					tokens = line.split(',')
-					tokens[2] = bool(tokens[2])
+					tokens = line.rstrip().split(',')
+					tokens[2] = bool(int(tokens[2]))
 					uploadCommands.add(tuple(tokens))
 
 		for command in uploadCommands:
-			self.fileManager.uploadData(tokens[0],tokens[1], tokens[2])
+			self.fileManager.uploadData(command[0], command[1], command[2])
 
-		self.fileManager.uploadData(self.fileManager.localAnalysisUpdateDir, self.fileManager.cloudAnalysisUpdateDir, False)
+		for uFile in uploadFiles:
+			pass
+			subprocess.run(['rm', '-rf', self.fileManager.localUploadDir + uFile])
 
+		self.fileManager.uploadData(self.fileManager.localAnalysisLogDir, self.fileManager.cloudAnalysisLogDir, False)
+
+	def localDelete(self):
+		subprocess.run(['rm', '-rf', self.projFileManager.localMasterDir])
 
 	def createUploadFile(self, uploads):
-		with open(self.fileManager.localUploadDir + 'UploadData_' + str(now) + '.csv', 'w') as f:
+		with open(self.fileManager.localUploadDir + 'UploadData_' + str(datetime.datetime.now().timestamp()) + '.csv', 'w') as f:
 			print('Local,Cloud,Tar', file = f)
 			for upload in uploads:
-				print(upload[0] + ',' + upload[1] + ',' + upload[2], file = f)
+				print(upload[0] + ',' + upload[1] + ',' + str(upload[2]), file = f)
 
 	def createAnalysisUpdate(self, aType, procObj):
 		now = datetime.datetime.now()
-		with open(self.fileManager.localAnalysisUpdateDir + 'AnalysisUpdate_' + str(now) + '.csv', 'w') as f:
+		with open(self.fileManager.localAnalysisLogDir + 'AnalysisUpdate_' + str(now.timestamp()) + '.csv', 'w') as f:
 			print('ProjectID,Type,Version,Date', file = f)
-			print(self.projectID + ',' + aType + ',' + procObj.__version__ + ',' + os.getenv('USER') + '_' + str(now), file= f)
+			print(self.projectID + ',' + aType + ',' + procObj.__version__ + '_' + os.getenv('USER') + ',' + str(now), file= f)
