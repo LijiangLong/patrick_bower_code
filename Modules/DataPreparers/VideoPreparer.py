@@ -27,6 +27,9 @@ class VideoPreparer:
 		self.lightsOnTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOnTime, minute = 0, second = 0, microsecond = 0)
 		self.lightsOffTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOffTime, minute = 0, second = 0, microsecond = 0)
 
+		print(self.videoObj.endTime)
+		print(self.videoObj.startTime)
+		print(self.lightsOffTime)
 		self.HMMsecs = int((min(self.videoObj.endTime, self.lightsOffTime) - self.videoObj.startTime).total_seconds() - 1)
 
 	def processVideo(self):
@@ -38,7 +41,7 @@ class VideoPreparer:
 
 		return self.clusterData
 
-	def _validateVideo(self, tol = 0.001):
+	def _validateVideo(self, tol = 0.01):
 		if not os.path.isfile(self.videofile):
 			self._convertVideo(self.videofile)
 		assert os.path.isfile(self.videofile)

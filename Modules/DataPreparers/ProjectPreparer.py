@@ -5,6 +5,7 @@ from Modules.DataPreparers.PrepPreparer import PrepPreparer as PrP
 from Modules.DataPreparers.DepthPreparer import DepthPreparer as DP
 from Modules.DataPreparers.ClusterPreparer import ClusterPreparer as CP
 from Modules.DataPreparers.MLClusterPreparer import MLClusterPreparer as MLP
+from Modules.DataPreparers.FigurePreparer import FigurePreparer as FP
 
 class ProjectPreparer():
 	# This class takes in a projectID and runs all the appropriate analysis
@@ -43,11 +44,11 @@ class ProjectPreparer():
 		self.createAnalysisUpdate('Depth', dp_obj)
 
 	def runClusterAnalysis(self):
-		avp_obj = AVP(self.projFileManager)
-		avp_obj.validateInputData()
-		avp_obj.runClusterAnalysis()
-		self.createUploadFile(avp_obj.uploads)
-		self.createAnalysisUpdate('Cluster', avp_obj)
+		cp_obj = CP(self.projFileManager, self.workers)
+		cp_obj.validateInputData()
+		cp_obj.runClusterAnalysis()
+		self.createUploadFile(cp_obj.uploads)
+		self.createAnalysisUpdate('Cluster', cp_obj)
 
 	def runMLClusterClassifier(self):
 		mlc_obj = MLC(self.projFileManager, self.mlFileManager)
@@ -58,6 +59,14 @@ class ProjectPreparer():
 
 	def runMLFishDetection(self):
 		pass
+
+	def runFiguresCreation(self):
+		fc_obj =FC(self.projFileManager)
+		fc_obj.validateInputData()
+
+		self.createUploadFile(fc_obj.uploads)
+		self.createAnalysisUpdate('Figures', fc_obj)
+
 
 	def backupAnalysis(self):
 		uploadCommands = set()

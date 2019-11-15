@@ -1,22 +1,37 @@
-from Modules.LogParser import LogParser as LP
+from Modules.DataObjects.LogParser import LogParser as LP
 from Modules.DataObjects.DepthAnalyzer import DepthAnalyzer as DA
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
 
-class FigureMaker:
+class FigurePreparer:
 	# This class takes in directory information and a logfile containing depth information and performs the following:
 	# 1. Identifies tray using manual input
 	# 2. Interpolates and smooths depth data
 	# 3. Automatically identifies bower location
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
-	def __init__(self, fileManager):
-		self.fileManager = fileManager
-		self.lp = LP(self.fileManager.localLogfile)
-		self.da_obj = DA(self.fileManager)
-			
-	def createDepthFigures(self, hourlyDelta = 2):
+	def __init__(self, projFileManager):
+		self.__version__ = '1.0.0'
+		self.projFileManager = projFileManager
+		self.lp = LP(projFileManager.localLogfile)
+
+	def validateInputData(self):
+		# Needs to be modified
+		assert os.path.exists(self.projFileManager.localFramesDir)
+		for frame in self.lp.frames:
+			assert os.path.exists(self.projFileManager.localMasterDir + frame.npy_file)
+			assert os.path.exists(self.projFileManager.localMasterDir + frame.pic_file)
+		assert os.path.exists(self.projFileManager.localTroubleshootingDir)
+		assert os.path.exists(self.projFileManager.localAnalysisDir)
+
+		self.uploads = [(self.projFileManager.localTroubleshootingDir, self.projFileManager.cloudTroubleshootingDir), 
+						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir)]
+
+	def _combineVideoData(self):
+		pass
+		
+	def _createDepthFigures(self, hourlyDelta = 2):
 
 		# Create summary figure of daily values
 		figDaily = plt.figure(figsize = (11,8.5)) 

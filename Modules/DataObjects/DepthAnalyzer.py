@@ -1,4 +1,4 @@
-from Modules.LogParser import LogParser as LP
+from Modules.DataObjects.LogParser import LogParser as LP
 import numpy as np
 from skimage import morphology
 from types import SimpleNamespace

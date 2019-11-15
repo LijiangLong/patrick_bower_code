@@ -1,5 +1,5 @@
 import pandas as pd
-import datetime
+import datetime, os
 
 from Modules.DataObjects.LogParser import LogParser as LP
 from Modules.DataPreparers.VideoPreparer import VideoPreparer as VP
@@ -17,30 +17,30 @@ class ClusterPreparer():
 
 		self.projFileManager = projFileManager
 		self.workers = workers
-		
+
 
 	def validateInputData(self):
-		assert os.path.exists(self.projFileManager.localVideoDir)
-		for video in self.lp.videos:
+		assert os.path.exists(self.projFileManager.localLogfile)
+		self.lp = LP(self.projFileManager.localLogfile)
+
+		for video in self.lp.movies:
 			try:
 				assert os.path.exists(self.projFileManager.localMasterDir + video.h264_file)
 			except AssertionError:
 				assert os.path.exists(self.projFileManager.localMasterDir + video.mp4_file)
-		assert os.path.exists(self.projFileManager.localLogfile)
 		assert os.path.exists(self.projFileManager.localTroubleshootingDir)
 		assert os.path.exists(self.projFileManager.localAnalysisDir)
 		assert os.path.exists(self.projFileManager.localTempDir)
 		assert os.path.exists(self.projFileManager.localAllClipsDir)
-		assert os.path.exists(self.projFileManager.localMLlClipsDir)
-		assert os.path.exists(self.projFileManager.localMLFramesDir)
+		assert os.path.exists(self.projFileManager.localManualLabelClipsDir)
+		assert os.path.exists(self.projFileManager.localManualLabelFramesDir)
 
-		self.lp = LP(projFileManager.localLogfile)
 
-		self.uploads = [(self.projFileManager.localTroubleshootingDir, self.projFileManager.cloudTroubleshootingDir, False), 
-						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir, False)
-						(self.projFileManager.localAllClipsDir, self.projFileManager.cloudMasterDir, True)
-						(self.projFileManager.localMLClipsDir, self.projFileManager.cloudMasterDir, True)
-						(self.projFileManager.localMLFramesDir, self.projFileManager.cloudMasterDir, True)
+		self.uploads = [(self.projFileManager.localTroubleshootingDir, self.projFileManager.cloudTroubleshootingDir, '0'), 
+						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir, '0'),
+						(self.projFileManager.localAllClipsDir, self.projFileManager.cloudMasterDir, '1'),
+						(self.projFileManager.localManualLabelClipsDir, self.projFileManager.cloudMasterDir, '1'),
+						(self.projFileManager.localManualLabelFramesDir, self.projFileManager.cloudMasterDir, '1')
 						]
 
 	def runClusterAnalysis(self):

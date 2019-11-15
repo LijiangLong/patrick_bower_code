@@ -58,6 +58,12 @@ class ProjFileManager():
 			self._downloadDirectory(self.allClipsDir)
 			self._createDirectory(self.localProcessedClipsDir)
 
+		elif dtype == 'Figures':
+			self._createDirectory(self.localMasterDir)
+			self._downloadFile(self.logfile)
+			self._downloadDirectory(self.analysisDir)
+			self._createDirectory(self.localFigureDir)
+
 		else:
 			raise KeyError('Unknown key: ' + dtype)
 		
@@ -74,7 +80,7 @@ class ProjFileManager():
 		subprocess.run(['rm','-rf', self.localMasterDir])
 
 	def returnVideoObject(self, index):
-		from Modules.LogParser import LogParser as LP
+		from Modules.DataObjects.LogParser import LogParser as LP
 
 		self._downloadFile(self.logfile)
 		self.lp = LP(self.localLogfile)
@@ -86,7 +92,7 @@ class ProjFileManager():
 		videoObj.localLabeledClustersFile = self.localTroubleshootingDir + videoObj.baseName + '_labeledClusters.csv'
 		videoObj.localAllClipsPrefix = self.localAllClipsDir + self.lp.projectID + '_' + videoObj.baseName
 		videoObj.localManualLabelClipsPrefix = self.localManualLabelClipsDir + self.lp.projectID + '_' + videoObj.baseName
-		videoObj.localIntensityFile = self.localFigureDir + videoObj.baseName + '_intensity.pdf'
+		videoObj.localIntensityFile = self.localFiguresDir + videoObj.baseName + '_intensity.pdf'
 		videoObj.localTempDir = self.localTempDir + videoObj.baseName + '/'
 		self._createDirectory(videoObj.localTempDir)
 
@@ -103,7 +109,7 @@ class ProjFileManager():
 		self.backgroundDir = 'Backgrounds/'
 		self.videoDir = 'Videos/'
 
-		# Directories created by analysis scripts
+		# Directories created by 
 		self.analysisDir = 'MasterAnalysisFiles/'
 		self.localAnalysisDir = self.localMasterDir + 'MasterAnalysisFiles/'
 		self.cloudAnalysisDir = self.cloudMasterDir + 'MasterAnalysisFiles/'

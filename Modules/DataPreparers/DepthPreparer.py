@@ -14,18 +14,19 @@ class DepthPreparer:
 		
 		self.__version__ = '1.0.0'
 		self.projFileManager = projFileManager
-		self.lp = LP(projFileManager.localLogfile)
 
 	def validateInputData(self):
-		assert os.path.exists(self.projFileManager.localFramesDir)
+		assert os.path.exists(self.projFileManager.localLogfile)
+		self.lp = LP(self.projFileManager.localLogfile)
+
 		for frame in self.lp.frames:
 			assert os.path.exists(self.projFileManager.localMasterDir + frame.npy_file)
 			assert os.path.exists(self.projFileManager.localMasterDir + frame.pic_file)
 		assert os.path.exists(self.projFileManager.localTroubleshootingDir)
 		assert os.path.exists(self.projFileManager.localAnalysisDir)
 
-		self.uploads = [(self.projFileManager.localTroubleshootingDir, self.projFileManager.cloudTroubleshootingDir), 
-						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir)]
+		self.uploads = [(self.projFileManager.localTroubleshootingDir, self.projFileManager.cloudTroubleshootingDir, '0'), 
+						(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir, '0')]
 
 
 	def createSmoothedArray(self, totalGoodData = 0.3, minGoodData = 0.5, minUnits = 5, tunits = 71, order = 4):

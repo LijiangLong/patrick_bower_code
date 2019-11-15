@@ -8,6 +8,28 @@ class MLFileManager():
 		self.cloudMasterDir = cloudMasterDir + self.analysisDir
 		self._createFileDirectoryNames()
 
+	def downloadData(self):
+		self._downloadFile(self.videoModelFile)
+		with open(self.localVideoModelFile) as f:
+			line = next(f)
+			line = next(f)
+			self.vModelID = line.rstrip().split(',')[1]
+
+		self.cloudActiveDir = self.cloudVideoModelsDir
+		self.localActiveDir = self.localVideoModelsDir
+
+		if os.path.exists(self.localMasterDir + '3D-Resnets'):
+			commandOutput = subprocess.run(['git', 'pull', self.localMasterDir + '3D-Resnets', self.localMasterDir + '3D-Resnets'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+		else:
+			commandOutput = subprocess.run(['git', 'clone', self.videoMLGithub, self.localMasterDir + '3D-Resnets'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+
+		self._downloadDirectory(self.vModelID)
+		self.localVideoModelFile = self.localActiveDir + self.vModelID + '/model.pth'
+		self.localVideoClassesFile = self.localActiveDir + self.vModelID + '/classInd.txt'
+		self.localVideoCommandsFile = self.localActiveDir + self.vModelID + '/commands.pkl'
+		self.localVideoPythonMainFile = self.localMasterDir + '3D-Resnets/main.py'
+		self.localVideoPythonJsonFile = self.localMasterDir + '3D-Resnets/utils/cichlids_json.py'
+
 	def _createFileDirectoryNames(self):
 		self.videoModelsDir = 'VideoModels/'
 		self.cloudVideoModelsDir = self.cloudMasterDir + self.videoModelsDir
@@ -22,25 +44,14 @@ class MLFileManager():
 		self.localVideoModelsDir = self.localMasterDir + self.videoModelsDir
 
 		self.videoMLGithub = 'https://www.github.com/ptmcgrat/3D-Resnets'
+		self.videoModelFile = 'MasterModels.txt'
+		self.localVideoModelFile = self.localMasterDir + self.videoModelFile
 
-	def prepareMLVideoClassification(self, vModelID):
-		self.vModelID = vModelID
 
-		self.cloudActiveDir = self.cloudVideoModelsDir
-		self.localActiveDir = self.localVideoModelsDir
-
-		if os.path.exists(self.localMasterDir + '3D-Resnets'):
-			commandOutput = subprocess.run(['git', 'pull', self.localMasterDir + '3D-Resnets', self.localMasterDir + '3D-Resnets'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-		else:
-			commandOutput = subprocess.run(['git', 'clone', self.videoMLGithub, self.localMasterDir + '3D-Resnets'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-
-		self._downloadDirectory(self.vModelID)
-		self.localVideoModelFile = self.localActiveDir + vModelID + '/model.pth'
-		self.localVideoClassesFile = self.localActiveDir + vModelID + '/classInd.txt'
-		self.localVideoCommandsFile = self.localActiveDir + vModelID + '/commands.pkl'
-		self.localVideoPythonMainFile = self.localMasterDir + '3D-Resnets/main.py'
-		self.localVideoPythonJsonFile = self.localMasterDir + '3D-Resnets/utils/cichlids_json.py'
-
+	def _downloadFile(self, dfile):
+		subprocess.call(['rclone', 'copy', self.cloudMasterDir + dfile, self.localMasterDir])
+		if not os.path.exists(self.localMasterDir + dfile):
+			raise FileNotFoundError('Unable to download ' + dfile + ' from ' + self.cloudMasterDir)
 
 	def _downloadDirectory(self, directory):
 
