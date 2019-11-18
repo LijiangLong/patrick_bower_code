@@ -108,9 +108,9 @@ class VideoPreparer:
 				subprocess.run(['rm', '-f', row_file])
 		print(str(totalBlocks) + ' total blocks. On block: ', end = '', flush = True)
 		for i in range(0, totalBlocks, self.workers):
-			print(str(i) + '-' + str(i+self.workers) + ',', end = '', flush = True)
+			print(str(i) + '-' + str(min(i+self.workers, totalBlocks - 1)) + ',', end = '', flush = True)
 			data = []
-			for j in range(self.workers):
+			for j in range(min(self.workers, totalBlocks)):
 				block = i + j
 
 				data.append(np.load(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'))
