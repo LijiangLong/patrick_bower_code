@@ -87,8 +87,8 @@ if args.command == 'TotalProjectAnalysis':
 
 	for projectID in args.ProjectIDs:
 		downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID])
-		depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', 1])
-		clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'Cluster', 'Depth', projectID, '-w', 23])
+		depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'])
+		clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'Cluster', 'Depth', projectID, '-w', '23'])
 		depthProcess.communicate()
 		clusterProcess.communicate()
 		downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID])
