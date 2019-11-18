@@ -87,9 +87,9 @@ class VideoPreparer:
 		print(str(totalBlocks) + ' total blocks. On block ', end = '', flush = True)
 		
 		for i in range(0, totalBlocks, self.workers):
-			print(str(i) + '-' + str(i+self.workers) + ',', end = '', flush = True)
+			print(str(i) + '-' + str(min(i+self.workers, totalBlocks - 1)) + ',', end = '', flush = True)
 			processes = []
-			for j in range(self.workers):
+			for j in range(min(self.workers, totalBlocks)):
 				min_time = int((i+j)*self.blocksize)
 				max_time = int(min((i+j+1)*self.blocksize, self.HMMsecs))
 				
