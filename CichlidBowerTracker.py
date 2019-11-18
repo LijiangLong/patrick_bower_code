@@ -1,4 +1,4 @@
-import argparse, os, pdb, sys
+import argparse, os, pdb, sys, subprocess
 from Modules.DataPreparers.AnalysisPreparer import AnalysisPreparer as AP
 from Modules.DataPreparers.ProjectPreparer import ProjectPreparer as PP
 
@@ -24,6 +24,7 @@ projectParser.add_argument('-d', '--DownloadOnly', action = 'store_true', help =
 totalProjectsParser = subparsers.add_parser('TotalProjectAnalysis', help='This command runs the entire pipeline on list of projectIDs')
 totalProjectsParser.add_argument('Computer', type = str, choices=['SRG','PACE'], help = 'What computer are you running this analysis from?')
 totalProjectsParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
+totalProjectsParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
 
 args = parser.parse_args()
 
@@ -80,7 +81,20 @@ elif args.command == 'ProjectAnalysis':
 		pp_obj.backupAnalysis()
 
 if args.command == 'TotalProjectAnalysis':
-	projects = parseProjects(args, )
+	ap_obj = AP()
+	if ap_obj.checkProjects(args.ProjectIDs):
+		sys.exit()
+
+	for projectID in args.ProjectIDs:
+		downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID])
+		depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', 1])
+		clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'Cluster', 'Depth', projectID, '-w', 23])
+		depthProcess.communicate()
+		clusterProcess.communicate()
+		downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID])
+	
+
+
 
 
 
