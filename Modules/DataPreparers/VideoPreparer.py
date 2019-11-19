@@ -51,7 +51,7 @@ class VideoPreparer:
 		new_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 		predicted_frames = int((self.videoObj.endTime - self.videoObj.startTime).total_seconds()*self.videoObj.framerate)
 
-		print('   VideoValidation: Size: ' + str((new_height,new_width)) + ',,fps: ' + str(new_framerate) + ',,Frames: ' + str(new_frames) + ',,PredictedFrames: ' + str(predicted_frames))
+		print('  VideoValidation: Size: ' + str((new_height,new_width)) + ',,fps: ' + str(new_framerate) + ',,Frames: ' + str(new_frames) + ',,PredictedFrames: ' + str(predicted_frames))
 
 		assert new_height == self.videoObj.height
 		assert new_width == self.videoObj.width
@@ -109,7 +109,7 @@ class VideoPreparer:
 			row_file = self.videoObj.localTempDir + str(row) + '.npy'
 			if os.path.isfile(row_file):
 				subprocess.run(['rm', '-f', row_file])
-		print('   ' + str(totalBlocks) + ' total blocks. On block: ', end = '', flush = True)
+		print('    ' + str(totalBlocks) + ' total blocks. On block: ', end = '', flush = True)
 		for i in range(0, totalBlocks, self.workers):
 			print(str(i) + '-' + str(min(i+self.workers, totalBlocks - 1)) + ',', end = '', flush = True)
 			data = []
@@ -142,7 +142,7 @@ class VideoPreparer:
 		print('  Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
 		# Calculate HMM on each block
 
-		print('   ' + str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
+		print('    ' + str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
 
 		for i in range(0, self.videoObj.height, self.workers):
 			start_row = i
@@ -321,10 +321,11 @@ class VideoPreparer:
 		first_frame = 0
 		if self.videoObj.startTime < self.lightsOnTime:
 			first_frame = int((self.lightsOnTime - self.videoObj.startTime).total_seconds()*self.videoObj.framerate)
+			last_frame = first_frame + int((self.lightsOffTime - self.lightsOnTime).total_seconds()*self.videoObj.framerate)
 		else:
 			first_frame = 0
-		last_frame = first_frame + int((self.lightsOffTime - self.lightsOnTime).total_seconds()*self.videoObj.framerate)
-		
+			last_frame = int((self.lightsOffTime - self.startTime).total_seconds()*self.videoObj.framerate)
+
 		last_frame = min(self.frames, last_frame)
 
 		for i in range(self.projFileManager.nManualLabelFrames):
