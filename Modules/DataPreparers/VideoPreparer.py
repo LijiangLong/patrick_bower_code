@@ -93,7 +93,7 @@ class VideoPreparer:
 				min_time = int((i+j)*self.blocksize)
 				max_time = int(min((i+j+1)*self.blocksize, self.HMMsecs))
 				
-				if max_time > min_time:
+				if max_time < min_time:
 					pdb.set_trace()
 
 				arguments = [self.videofile, str(self.videoObj.framerate), str(min_time), str(max_time), self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
