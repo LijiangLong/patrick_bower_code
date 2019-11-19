@@ -104,7 +104,7 @@ class VideoPreparer:
 		
 		
 		print()
-		print('   Combining data into rowfiles,,Time: ' + str(datetime.datetime.now()))
+		print('  Combining data into rowfiles,,Time: ' + str(datetime.datetime.now()))
 		for row in range(self.videoObj.height):
 			row_file = self.videoObj.localTempDir + str(row) + '.npy'
 			if os.path.isfile(row_file):
@@ -139,7 +139,7 @@ class VideoPreparer:
 		print()
 
 	def _calculateHMM(self):
-		print('   Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
+		print('  Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
 		# Calculate HMM on each block
 
 		print('   ' + str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
@@ -171,7 +171,7 @@ class VideoPreparer:
 		# Delete temp data
 
 	def _createClusters(self):
-		print('   Creating clusters from HMM transitions,,Time: ' + str(datetime.datetime.now())) 
+		print('  Creating clusters from HMM transitions,,Time: ' + str(datetime.datetime.now())) 
 
 		# Load in HMM data
 		hmmObj = HA(self.videoObj.localHMMFile)
@@ -208,7 +208,7 @@ class VideoPreparer:
 		sortData[:,0] = sortData[:,0]/self.projFileManager.timeScale
 		labeledCoords = np.concatenate((sortData, labels), axis = 1).astype('int64')
 		np.save(self.videoObj.localLabeledCoordsFile, labeledCoords)
-		print('   Concatenating and summarizing clusters,,Time: ' + str(datetime.datetime.now())) 
+		print('  Concatenating and summarizing clusters,,Time: ' + str(datetime.datetime.now())) 
 
 		df = pd.DataFrame(labeledCoords, columns=['T','X','Y','LID'])
 		clusterData = df.groupby('LID').apply(lambda x: pd.Series({
@@ -258,7 +258,7 @@ class VideoPreparer:
 		self.clusterData = clusterData
 
 	def _createAnnotationFiles(self):
-		print('   Creating small video clips for classification,,Time: ' + str(datetime.datetime.now())) 
+		print('  Creating small video clips for classification,,Time: ' + str(datetime.datetime.now())) 
 
 		# Clip creation is super slow so we do it in parallel
 		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
@@ -279,7 +279,7 @@ class VideoPreparer:
 					p.communicate()
 				processes = []
 		
-		print('   Creating small video clips for manual labeling,,Time: ' + str(datetime.datetime.now())) 
+		print('  Creating small video clips for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create video clips for manual labeling - this includes HMM data
 		cap = cv2.VideoCapture(self.videofile)
@@ -313,7 +313,7 @@ class VideoPreparer:
 			assert(os.path.exists(outName_out))
 		cap.release()
 
-		print('   Creating frames for manual labeling,,Time: ' + str(datetime.datetime.now())) 
+		print('  Creating frames for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create frames for manual labeling
 		cap = cv2.VideoCapture(self.videofile)
