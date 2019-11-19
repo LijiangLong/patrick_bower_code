@@ -143,8 +143,8 @@ class VideoPreparer:
 		print(str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
 
 		for i in range(0, self.videoObj.height, self.workers):
-			start_row = i*self.workers
-			stop_row = min((i+1)*self.workers,self.videoObj.height-1)
+			start_row = i
+			stop_row = min((i + self.workers,self.videoObj.height))
 			print(str(start_row) + '-' + str(stop_row - 1) + ',', end = '', flush = True)
 			processes = []
 			for row in range(start_row, stop_row):
