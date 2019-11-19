@@ -67,6 +67,11 @@ class ProjectPreparer():
 		self.createUploadFile(fc_obj.uploads)
 		self.createAnalysisUpdate('Figures', fc_obj)
 
+	def runObjectLabeling(self):
+		lc_obj =LC(self.projFileManager)
+		lc_obj.validateInputData()
+
+		
 
 	def backupAnalysis(self):
 		uploadCommands = set()

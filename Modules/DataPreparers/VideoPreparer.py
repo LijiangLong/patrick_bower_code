@@ -93,6 +93,9 @@ class VideoPreparer:
 				min_time = int((i+j)*self.blocksize)
 				max_time = int(min((i+j+1)*self.blocksize, self.HMMsecs))
 				
+				if max_time > min_time:
+					pdb.set_trace()
+
 				arguments = [self.videofile, str(self.videoObj.framerate), str(min_time), str(max_time), self.videoObj.localTempDir + 'Decompressed_' + str(i+j) + '.npy']
 				processes.append(subprocess.Popen(['python3', 'Modules/Scripts/Decompress_block.py'] + arguments))
 			
@@ -131,15 +134,17 @@ class VideoPreparer:
 					except AssertionError:
 						pdb.set_trace()
 			#subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
-
+		print()
 
 	def _calculateHMM(self):
-		totalBlocks = math.ceil(self.videoObj.height/self.workers)
 		print('Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
 		# Calculate HMM on each block
-		for block in range(0, totalBlocks):
-			start_row = block*self.workers
-			stop_row = min((block+1)*self.workers,self.videoObj.height)
+
+		print(str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
+
+		for i in range(0, self.videoObj.height, self.workers):
+			start_row = i*self.workers
+			stop_row = min((i+1)*self.workers,self.videoObj.height-1)
 			print(str(start_row) + '-' + str(stop_row - 1) + ',', end = '', flush = True)
 			processes = []
 			for row in range(start_row, stop_row):
