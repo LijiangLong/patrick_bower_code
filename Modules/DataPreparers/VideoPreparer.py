@@ -27,9 +27,7 @@ class VideoPreparer:
 		self.lightsOnTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOnTime, minute = 0, second = 0, microsecond = 0)
 		self.lightsOffTime = self.videoObj.startTime.replace(hour = self.projFileManager.lightsOffTime, minute = 0, second = 0, microsecond = 0)
 
-		print(self.videoObj.endTime)
-		print(self.videoObj.startTime)
-		print(self.lightsOffTime)
+
 		self.HMMsecs = int((min(self.videoObj.endTime, self.lightsOffTime) - self.videoObj.startTime).total_seconds() - 1)
 
 	def processVideo(self):
@@ -53,7 +51,7 @@ class VideoPreparer:
 		new_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 		predicted_frames = int((self.videoObj.endTime - self.videoObj.startTime).total_seconds()*self.videoObj.framerate)
 
-		print('VideoValidation: Size: ' + str((new_height,new_width)) + ',,fps: ' + str(new_framerate) + ',,Frames: ' + str(new_frames) + ',,PredictedFrames: ' + str(predicted_frames))
+		print('   VideoValidation: Size: ' + str((new_height,new_width)) + ',,fps: ' + str(new_framerate) + ',,Frames: ' + str(new_frames) + ',,PredictedFrames: ' + str(predicted_frames))
 
 		assert new_height == self.videoObj.height
 		assert new_width == self.videoObj.width
@@ -69,7 +67,7 @@ class VideoPreparer:
 		assert os.path.isfile(h264_video)
 
 		command = ['ffmpeg', '-r', str(self.videoObj.framerate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.framerate), mp4_video]
-		print('VideoConversion: ' + ' '.join(command) + ',Time' + str(datetime.datetime.now()))
+		print('  VideoConversion: ' + ' '.join(command) + ',Time' + str(datetime.datetime.now()))
 		output = subprocess.run(command, stdout = subprocess.PIPE, stdin = subprocess.PIPE)
 		assert os.path.isfile(mp4_video)
 
@@ -83,13 +81,15 @@ class VideoPreparer:
 		self.blocksize = 5*60 # Decompress videos in 5 minute chunks
 
 		totalBlocks = math.ceil(self.HMMsecs/(self.blocksize)) #Number of blocks that need to be analyzed for the full video
-		print('Decompressing video into 1 second chunks,,Time: ' + str(datetime.datetime.now()))
-		print(str(totalBlocks) + ' total blocks. On block ', end = '', flush = True)
+		print('  Decompressing video into 1 second chunks,,Time: ' + str(datetime.datetime.now()))
+		print('    ' + str(totalBlocks) + ' total blocks. On block ', end = '', flush = True)
 		
 		for i in range(0, totalBlocks, self.workers):
 			print(str(i) + '-' + str(min(i+self.workers, totalBlocks - 1)) + ',', end = '', flush = True)
 			processes = []
-			for j in range(min(self.workers, totalBlocks)):
+			for j in range(self.workers):
+				if i + j >= totalBlocks:
+					break
 				min_time = int((i+j)*self.blocksize)
 				max_time = int(min((i+j+1)*self.blocksize, self.HMMsecs))
 				
@@ -104,17 +104,19 @@ class VideoPreparer:
 		
 		
 		print()
-		print('Combining data into rowfiles,,Time: ' + str(datetime.datetime.now()))
+		print('   Combining data into rowfiles,,Time: ' + str(datetime.datetime.now()))
 		for row in range(self.videoObj.height):
 			row_file = self.videoObj.localTempDir + str(row) + '.npy'
 			if os.path.isfile(row_file):
 				subprocess.run(['rm', '-f', row_file])
-		print(str(totalBlocks) + ' total blocks. On block: ', end = '', flush = True)
+		print('   ' + str(totalBlocks) + ' total blocks. On block: ', end = '', flush = True)
 		for i in range(0, totalBlocks, self.workers):
 			print(str(i) + '-' + str(min(i+self.workers, totalBlocks - 1)) + ',', end = '', flush = True)
 			data = []
-			for j in range(min(self.workers, totalBlocks)):
+			for j in range(self.workers):
 				block = i + j
+				if block >= totalBlocks:
+					break
 
 				data.append(np.load(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'))
 
@@ -137,10 +139,10 @@ class VideoPreparer:
 		print()
 
 	def _calculateHMM(self):
-		print('Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
+		print('   Calculating HMMs for each row,,Time: ' + str(datetime.datetime.now())) 
 		# Calculate HMM on each block
 
-		print(str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
+		print('   ' + str(self.videoObj.height) + ' total rows. On rows ', end = '', flush = True)
 
 		for i in range(0, self.videoObj.height, self.workers):
 			start_row = i
@@ -169,7 +171,7 @@ class VideoPreparer:
 		# Delete temp data
 
 	def _createClusters(self):
-		print('Creating clusters from HMM transitions,,Time: ' + str(datetime.datetime.now())) 
+		print('   Creating clusters from HMM transitions,,Time: ' + str(datetime.datetime.now())) 
 
 		# Load in HMM data
 		hmmObj = HA(self.videoObj.localHMMFile)
@@ -187,7 +189,7 @@ class VideoPreparer:
 
 		#Calculate clusters in batches to avoid RAM overuse
 		curr_label = 0 #Labels for each batch start from zero - need to offset these 
-		print(str(numBatches) + ' total batches. On batch: ', end = '', flush = True)
+		print('   ' + str(numBatches) + ' total batches. On batch: ', end = '', flush = True)
 		for i in range(numBatches):
 			print(str(i) + ',', end = '', flush = True)
 
@@ -206,7 +208,7 @@ class VideoPreparer:
 		sortData[:,0] = sortData[:,0]/self.projFileManager.timeScale
 		labeledCoords = np.concatenate((sortData, labels), axis = 1).astype('int64')
 		np.save(self.videoObj.localLabeledCoordsFile, labeledCoords)
-		print('Concatenating and summarizing clusters,,Time: ' + str(datetime.datetime.now())) 
+		print('   Concatenating and summarizing clusters,,Time: ' + str(datetime.datetime.now())) 
 
 		df = pd.DataFrame(labeledCoords, columns=['T','X','Y','LID'])
 		clusterData = df.groupby('LID').apply(lambda x: pd.Series({
@@ -256,7 +258,7 @@ class VideoPreparer:
 		self.clusterData = clusterData
 
 	def _createAnnotationFiles(self):
-		print('Creating small video clips for classification,,Time: ' + str(datetime.datetime.now())) 
+		print('   Creating small video clips for classification,,Time: ' + str(datetime.datetime.now())) 
 
 		# Clip creation is super slow so we do it in parallel
 		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
@@ -277,7 +279,7 @@ class VideoPreparer:
 					p.communicate()
 				processes = []
 		
-		print('Creating small video clips for manual labeling,,Time: ' + str(datetime.datetime.now())) 
+		print('   Creating small video clips for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create video clips for manual labeling - this includes HMM data
 		cap = cv2.VideoCapture(self.videofile)
@@ -311,7 +313,7 @@ class VideoPreparer:
 			assert(os.path.exists(outName_out))
 		cap.release()
 
-		print('Creating frames for manual labeling,,Time: ' + str(datetime.datetime.now())) 
+		print('   Creating frames for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create frames for manual labeling
 		cap = cv2.VideoCapture(self.videofile)
