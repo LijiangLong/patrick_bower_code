@@ -64,17 +64,11 @@ class ProjFileManager():
 			self._downloadDirectory(self.analysisDir)
 			self._createDirectory(self.localFigureDir)
 
+		elif dtype == 'ObjectLabeler':
+			self._createDirectory(self.localMasterDir)
+			self._downloadDirectory(self.manualLabelFramesDir)
 		else:
 			raise KeyError('Unknown key: ' + dtype)
-		
-	def prepareFigureAnalysis(self):
-		self._createDirectory(self.localMasterDir)
-		self._createDirectory(self.localFigureDir)
-		self._downloadFile(self.logfile)
-		self._downloadDirectory(self.analysisDir)
-
-	def backupFigureAnalysis(self):
-		self._uploadDirectory(self.figureDir)
 
 	def localDelete(self):
 		subprocess.run(['rm','-rf', self.localMasterDir])

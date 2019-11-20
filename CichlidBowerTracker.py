@@ -69,7 +69,7 @@ elif args.command == 'ProjectAnalysis':
 		pp_obj.runClusterAnalysis()
 
 	elif args.AnalysisType == 'MLClassification':
-		pp_obj.runMLCllasification()
+		pp_obj.runMLClassification()
 
 	elif args.AnalysisType == 'MLFishDetection':
 		pp_obj.runMLFishDetection()

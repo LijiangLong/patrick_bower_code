@@ -68,10 +68,11 @@ class ProjectPreparer():
 		self.createAnalysisUpdate('Figures', fc_obj)
 
 	def runObjectLabeling(self):
+		self.projFileManager.downloadData('ObjectLabeler')
 		lc_obj =LC(self.projFileManager)
 		lc_obj.validateInputData()
 
-		
+
 
 	def backupAnalysis(self):
 		uploadCommands = set()

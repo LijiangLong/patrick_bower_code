@@ -324,7 +324,7 @@ class VideoPreparer:
 			last_frame = first_frame + int((self.lightsOffTime - self.lightsOnTime).total_seconds()*self.videoObj.framerate)
 		else:
 			first_frame = 0
-			last_frame = int((self.lightsOffTime - self.startTime).total_seconds()*self.videoObj.framerate)
+			last_frame = int((self.lightsOffTime - self.videoObj.startTime).total_seconds()*self.videoObj.framerate)
 
 		last_frame = min(self.frames, last_frame)
 
