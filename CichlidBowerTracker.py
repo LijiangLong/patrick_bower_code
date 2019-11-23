@@ -22,7 +22,7 @@ projectParser.add_argument('-g', '--GPUs', type = int, help = 'Use if you want t
 projectParser.add_argument('-d', '--DownloadOnly', action = 'store_true', help = 'Use if you only want to download the data for a specific analysis')
 
 totalProjectsParser = subparsers.add_parser('TotalProjectAnalysis', help='This command runs the entire pipeline on list of projectIDs')
-totalProjectsParser.add_argument('Computer', type = str, choices=['SRG','PACE'], help = 'What computer are you running this analysis from?')
+totalProjectsParser.add_argument('Computer', type = str, choices=['NURF','SRG','PACE'], help = 'What computer are you running this analysis from?')
 totalProjectsParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type = str, help = 'Manually identify the projects you want to analyze. If All is specified, all non-prepped projects will be analyzed')
 totalProjectsParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
 
@@ -69,7 +69,7 @@ elif args.command == 'ProjectAnalysis':
 		pp_obj.runClusterAnalysis()
 
 	elif args.AnalysisType == 'MLClassification':
-		pp_obj.runMLClassification()
+		pp_obj.runMLClusterClassifier()
 
 	elif args.AnalysisType == 'MLFishDetection':
 		pp_obj.runMLFishDetection()
@@ -86,13 +86,19 @@ if args.command == 'TotalProjectAnalysis':
 		sys.exit()
 
 	for projectID in args.ProjectIDs:
-		downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID])
-		depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'])
-		clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'])
-		depthProcess.communicate()
-		clusterProcess.communicate()
-		mlProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'MLClassification', projectID])
-		
+		if args.Computer == 'SRG':
+			#downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID])
+			#depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'])
+			#clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'])
+			#depthProcess.communicate()
+			#clusterProcess.communicate()
+			mlProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'MLClassification', projectID])
+		elif args.Computer == 'NURF':
+			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID])
+			depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'])
+			clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'])
+			depthProcess.communicate()
+			clusterProcess.communicate()
 		#downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID])
 	
 

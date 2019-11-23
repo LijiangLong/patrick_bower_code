@@ -88,6 +88,9 @@ class ProjFileManager():
 		videoObj.localManualLabelClipsPrefix = self.localManualLabelClipsDir + self.lp.projectID + '_' + videoObj.baseName
 		videoObj.localIntensityFile = self.localFiguresDir + videoObj.baseName + '_intensity.pdf'
 		videoObj.localTempDir = self.localTempDir + videoObj.baseName + '/'
+		videoObj.nManualLabelClips = int(self.nManualLabelClips/len(self.lp.movies))
+		videoObj.nManualLabelFrames = int(self.nManualLabelFrames/len(self.lp.movies))
+		
 		self._createDirectory(videoObj.localTempDir)
 
 		return videoObj
@@ -173,13 +176,13 @@ class ProjFileManager():
 		self.delta = 1.0 # Batches to calculate clusters
 
 		# Clip creation parameters
-		self.nManualLabelClips = 400
+		self.nManualLabelClips = 1200
 		self.delta_xy = 100
 		self.delta_t = 60
 		self.smallLimit = 500
 
 		# Manual Label Frame 
-		self.nManualLabelFrames = 200
+		self.nManualLabelFrames = 500
 
 
 	def _createDirectory(self, directory):

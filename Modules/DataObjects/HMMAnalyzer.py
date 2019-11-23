@@ -32,7 +32,7 @@ class HMMAnalyzer:
 		#minMagnitude is the size of the color change for a pixel to need to have
 		#densityFilter filters out time points that have to many changes occur across the frame (1 = 1% of all pixels)
 
-		print('DBScanMatrixCreation: ' + str(self.data.shape[0] - self.width*self.height) + ' raw transitions are found in the entire video', file = sys.stderr)
+		#print('DBScanMatrixCreation: ' + str(self.data.shape[0] - self.width*self.height) + ' raw transitions are found in the entire video', file = sys.stderr)
 		
 		#Threshold out timepoints that have too many changes
 		time, counts = np.unique(self.data[:,0], return_counts = True)
@@ -42,7 +42,7 @@ class HMMAnalyzer:
 		allCoords = self.data[~np.isin(self.data[:,0], badTimes)][:,[0,3,4,5]].astype('uint64')
 			
 		allCoords = allCoords[allCoords[:,3] > minMagnitude].copy()
-		print('DBScanMatrixCreation: ' + str(allCoords.shape[0]) + ' HMM transitions passed magnitude and density filtering criteria', file = sys.stderr)
+		#print('DBScanMatrixCreation: ' + str(allCoords.shape[0]) + ' HMM transitions passed magnitude and density filtering criteria', file = sys.stderr)
 		return allCoords
 
 	def retImage(self, t):

@@ -39,6 +39,9 @@ class VideoPreparer:
 
 		return self.clusterData
 
+	def readClusterData(self):
+		pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
+
 	def _validateVideo(self, tol = 0.01):
 		if not os.path.isfile(self.videofile):
 			self._convertVideo(self.videofile)
@@ -68,7 +71,7 @@ class VideoPreparer:
 
 		command = ['ffmpeg', '-r', str(self.videoObj.framerate), '-i', h264_video, '-c:v', 'copy', '-r', str(self.videoObj.framerate), mp4_video]
 		print('  VideoConversion: ' + ' '.join(command) + ',Time' + str(datetime.datetime.now()))
-		output = subprocess.run(command, stdout = subprocess.PIPE, stdin = subprocess.PIPE)
+		output = subprocess.run(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		assert os.path.isfile(mp4_video)
 
 		# Ensure the conversion went ok.     
@@ -247,10 +250,10 @@ class VideoPreparer:
 			else:
 				clusterData.loc[clusterData.index == LID,'ClipCreated'] = 'Yes'
 				if N < self.projFileManager.smallLimit:
-					if smallClips > self.projFileManager.nManualLabelClips/20:
+					if smallClips > self.videoObj.nManualLabelClips/20:
 						continue
 					smallClips += 1
-				if clipsCreated < self.projFileManager.nManualLabelClips:
+				if clipsCreated < self.videoObj.nManualLabelClips:
 					clusterData.loc[clusterData.index == LID,'ManualAnnotation'] = 'Yes'
 					clipsCreated += 1
 
@@ -328,7 +331,7 @@ class VideoPreparer:
 
 		last_frame = min(self.frames, last_frame)
 
-		for i in range(self.projFileManager.nManualLabelFrames):
+		for i in range(int(self.projFileManager.nManualLabelFrames/len(self.lp.movies)):
 			frameIndex = random.randint(first_frame, last_frame)
 			cap.set(cv2.CAP_PROP_POS_FRAMES, frameIndex)
 			ret, frame = cap.read()
