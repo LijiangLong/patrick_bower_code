@@ -16,8 +16,6 @@ class MLFileManager():
 	def downloadData(self):
 		
 
-		self.cloudActiveDir = self.cloudVideoModelsDir
-		self.localActiveDir = self.localVideoModelsDir
 
 		if os.path.exists(self.localMasterDir + '3D-Resnets'):
 			commandOutput = subprocess.run(['git', 'pull', self.localMasterDir + '3D-Resnets', self.localMasterDir + '3D-Resnets'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
@@ -57,6 +55,6 @@ class MLFileManager():
 	def _downloadDirectory(self, directory):
 
 		# First try to download tarred Directory
-		subprocess.run(['rclone', 'copy', self.cloudActiveDir + directory, self.localActiveDir + directory])
-		if not os.path.exists(self.localActiveDir + directory):
-			raise FileNotFoundError('Unable to download ' + directory + ' from ' + self.cloudActiveDir)
+		subprocess.run(['rclone', 'copy', self.cloudMasterDir + directory, self.localMasterDir + directory])
+		if not os.path.exists(self.localMasterDir + directory):
+			raise FileNotFoundError('Unable to download ' + directory + ' from ' + self.cloudMasterDir)
