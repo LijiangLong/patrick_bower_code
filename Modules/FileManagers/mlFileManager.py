@@ -6,12 +6,8 @@ class MLFileManager():
 		self.analysisDir = '__MachineLearningModels/'
 		self.localMasterDir = localMasterDir + self.analysisDir
 		self.cloudMasterDir = cloudMasterDir + self.analysisDir
+		
 		self._createFileDirectoryNames()
-		self._downloadFile(self.videoModelFile)
-		with open(self.localVideoModelFile) as f:
-			line = next(f)
-			line = next(f)
-			self.vModelID = line.rstrip().split(',')[1]
 
 	def downloadData(self):
 		
@@ -23,6 +19,15 @@ class MLFileManager():
 		self._downloadDirectory(self.vModelID)
 
 	def _createFileDirectoryNames(self):
+		self.videoModelFile = 'MasterModels.txt'
+		self.localVideoModelFile = self.localMasterDir + self.videoModelFile
+
+		self._downloadFile(self.videoModelFile)
+		with open(self.localVideoModelFile) as f:
+			line = next(f)
+			line = next(f)
+			self.vModelID = line.rstrip().split(',')[1]
+
 		self.videoModelsDir = 'VideoModels/'
 		self.cloudVideoModelsDir = self.cloudMasterDir + self.videoModelsDir
 		self.localVideoModelsDir = self.localMasterDir + self.videoModelsDir
@@ -36,8 +41,6 @@ class MLFileManager():
 		self.localVideoModelsDir = self.localMasterDir + self.videoModelsDir
 
 		self.videoMLGithub = 'https://www.github.com/ptmcgrat/3D-Resnets'
-		self.videoModelFile = 'MasterModels.txt'
-		self.localVideoModelFile = self.localMasterDir + self.videoModelFile
 
 		self.localVideoModelFile = self.localMasterDir + self.vModelID + '/model.pth'
 		self.localVideoClassesFile = self.localMasterDir + self.vModelID + '/classInd.txt'
