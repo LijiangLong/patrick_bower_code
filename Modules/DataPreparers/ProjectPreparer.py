@@ -56,7 +56,7 @@ class ProjectPreparer():
 		mlc_obj.predictVideoLabels()
 		self.createUploadFile(mlc_obj.uploads)
 		self.createAnalysisUpdate('MLClassifier', mlc_obj)
-		
+
 
 	def runMLFishDetection(self):
 		pass
@@ -96,6 +96,7 @@ class ProjectPreparer():
 			subprocess.run(['rm', '-rf', self.fileManager.localUploadDir + uFile])
 
 		self.fileManager.uploadData(self.fileManager.localAnalysisLogDir, self.fileManager.cloudAnalysisLogDir, False)
+		subprocess.run(['rm', '-rf', self.projFileManager.localMasterDir])
 
 	def localDelete(self):
 		subprocess.run(['rm', '-rf', self.projFileManager.localMasterDir])
