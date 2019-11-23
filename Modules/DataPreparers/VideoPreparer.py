@@ -331,7 +331,7 @@ class VideoPreparer:
 
 		last_frame = min(self.frames, last_frame)
 
-		for i in range(int(self.projFileManager.nManualLabelFrames/len(self.lp.movies)):
+		for i in range(int(self.projFileManager.nManualLabelFrames/len(self.lp.movies))):
 			frameIndex = random.randint(first_frame, last_frame)
 			cap.set(cv2.CAP_PROP_POS_FRAMES, frameIndex)
 			ret, frame = cap.read()
