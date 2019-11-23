@@ -216,7 +216,7 @@ class ProjFileManager():
 		if tar:
 			if directory[-1] == '/':
 				directory = directory[:-1]
-			subprocess.run(['tar', '-cvf', self.localMasterDir + directory + '.tar', '-C', self.localMasterDir, directory], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
+			output = subprocess.run(['tar', '-cvf', self.localMasterDir + directory + '.tar', '-C', self.localMasterDir, directory], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
 			command = ['rclone', 'copy', self.localMasterDir + directory + '.tar', self.cloudMasterDir, '--exclude', '.DS_Store']
 		else:
 			command = ['rclone', 'copy', self.localMasterDir + directory, self.cloudMasterDir + directory, '--exclude', '.DS_Store']
