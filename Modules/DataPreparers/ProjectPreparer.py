@@ -56,6 +56,7 @@ class ProjectPreparer():
 		mlc_obj.predictVideoLabels()
 		self.createUploadFile(mlc_obj.uploads)
 		self.createAnalysisUpdate('MLClassifier', mlc_obj)
+		
 
 	def runMLFishDetection(self):
 		pass
