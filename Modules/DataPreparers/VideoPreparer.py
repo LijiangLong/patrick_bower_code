@@ -40,7 +40,9 @@ class VideoPreparer:
 		return self.clusterData
 
 	def readClusterData(self):
-		pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
+		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
+
+		return self.clusterData
 
 	def _validateVideo(self, tol = 0.01):
 		if not os.path.isfile(self.videofile):
@@ -138,7 +140,7 @@ class VideoPreparer:
 						assert out_data.shape == (self.videoObj.width, self.HMMsecs)
 					except AssertionError:
 						pdb.set_trace()
-			#subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
+			subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
 		print()
 
 	def _calculateHMM(self):
