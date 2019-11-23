@@ -26,7 +26,7 @@ class MLClusterPreparer:
 		assert os.path.exists(self.mlFileManager.localVideoPythonMainFile)
 		assert os.path.exists(self.mlFileManager.localVideoPythonJsonFile)
 		
-		self.uploads = [(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir, False)
+		self.uploads = [(self.projFileManager.localAnalysisDir, self.projFileManager.cloudAnalysisDir, 0)
 						]
 
 	def predictVideoLabels(self):
