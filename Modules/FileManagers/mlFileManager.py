@@ -15,8 +15,6 @@ class MLFileManager():
 
 	def downloadData(self):
 		
-
-
 		if os.path.exists(self.localMasterDir + '3D-Resnets'):
 			commandOutput = subprocess.run(['git', 'pull', self.localMasterDir + '3D-Resnets', self.localMasterDir + '3D-Resnets'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 		else:
@@ -41,9 +39,9 @@ class MLFileManager():
 		self.videoModelFile = 'MasterModels.txt'
 		self.localVideoModelFile = self.localMasterDir + self.videoModelFile
 
-		self.localVideoModelFile = self.localActiveDir + self.vModelID + '/model.pth'
-		self.localVideoClassesFile = self.localActiveDir + self.vModelID + '/classInd.txt'
-		self.localVideoCommandsFile = self.localActiveDir + self.vModelID + '/commands.pkl'
+		self.localVideoModelFile = self.localMasterDir + self.vModelID + '/model.pth'
+		self.localVideoClassesFile = self.localMasterDir + self.vModelID + '/classInd.txt'
+		self.localVideoCommandsFile = self.localMasterDir + self.vModelID + '/commands.pkl'
 		self.localVideoPythonMainFile = self.localMasterDir + '3D-Resnets/main.py'
 		self.localVideoPythonJsonFile = self.localMasterDir + '3D-Resnets/utils/cichlids_json.py'
 
