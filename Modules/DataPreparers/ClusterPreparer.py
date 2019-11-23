@@ -52,7 +52,7 @@ class ClusterPreparer():
 			if index == 14:
 				clusterData.append(self.vp_objs[index].processVideo())
 			else:
-				clusterData.append(self.readClusterData())
+				clusterData.append(self.vp_objs[index].readClusterData())
 		allClusterData = pd.concat(clusterData)
 		allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
 
