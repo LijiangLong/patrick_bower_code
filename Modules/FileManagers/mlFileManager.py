@@ -43,7 +43,7 @@ class MLFileManager():
 		self.videoMLGithub = 'https://www.github.com/ptmcgrat/3D-Resnets'
 
 		self.localVideoModelFile = self.localVideoModelsDir + self.vModelID + '/model.pth'
-		self.localVideoClassesFile = self.locaVideoModelsDir + self.vModelID + '/classInd.txt'
+		self.localVideoClassesFile = self.localVideoModelsDir + self.vModelID + '/classInd.txt'
 		self.localVideoCommandsFile = self.localVideoModelsDir + self.vModelID + '/commands.pkl'
 		self.localVideoPythonMainFile = self.localMasterDir + '3D-Resnets/main.py'
 		self.localVideoPythonJsonFile = self.localMasterDir + '3D-Resnets/utils/cichlids_json.py'
