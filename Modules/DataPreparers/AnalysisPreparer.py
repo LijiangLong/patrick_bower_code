@@ -15,7 +15,7 @@ class AnalysisPreparer:
 		self._mergeUpdates()
 		if projectSummary:
 			self._createProjectsSummary()
-		self.fileManager.uploadData(self.fileManager.localAnalysisSummaryFile, self.fileManager.localAnalysisLogDir, False)
+		self.fileManager.uploadData(self.fileManager.localAnalysisSummaryFile, self.fileManager.cloudAnalysisLogDir, False)
 
 	def checkProjects(self, projects):
 		self._loadAnalysisDir()
@@ -93,8 +93,7 @@ class AnalysisPreparer:
 				analysisData['Figures_Date'].append('None')
 		
 		dt = pd.DataFrame(analysisData, index = sorted(projectIDs))
-		self.anDT.append(dt)
-
+		self.anDT = self.anDT.append(dt)
 		self.anDT.to_excel(self.fileManager.localAnalysisSummaryFile, sheet_name = 'Master', index = True)  # doctest: +SKIP
 
 	def _mergeUpdates(self):
@@ -118,7 +117,7 @@ class AnalysisPreparer:
 			subprocess.run(['rclone', 'delete', self.fileManager.cloudAnalysisLogDir + update])
 
 
-	def _createProjectsSummary(self, print_screen = True):
+	def _createProjectsSummary(self, print_screen = False):
 		self.info = {}
 		self.info['All'] = list(self.anDT.index)
 		for analysis in self.projectTypes:
