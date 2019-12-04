@@ -36,7 +36,7 @@ class VideoPreparer:
 		self._calculateHMM()
 		self._createClusters()
 		self._createAnnotationFiles()
-
+		
 		return self.clusterData
 
 	def readClusterData(self):
