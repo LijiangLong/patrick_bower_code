@@ -79,6 +79,7 @@ class VideoPreparer:
 		# Ensure the conversion went ok.     
 		assert os.stat(mp4_video).st_size >= os.stat(h264_video).st_size
 
+		subprocess.run(['rm', '-f', h264_video])
 
 	def _decompressVideo(self):
 
