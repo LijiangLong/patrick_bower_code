@@ -91,13 +91,13 @@ if args.command == 'TotalProjectAnalysis':
 			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
-			depthProcess.communicate()
-			clusterProcess.communicate()
+			depthOut = depthProcess.communicate()
+			clusterOut = clusterProcess.communicate()
 			mlProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'MLClassification', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 
-			if depthProcess.stderr != '' or clusterProcess.stderr != '' or mlProcess.stderr != '':
-				print('DepthError: ' + depthProcess.stderr)
-				print('ClusterError: ' + depthProcess.stderr)
+			if depthOut[1] != '' or clusterOut[1] != '' or mlProcess.stderr != '':
+				print('DepthError: ' + depthOut[1])
+				print('ClusterError: ' + clusterOut[1])
 				print('MLError: ' + depthProcess.stderr)
 				sys.exit()
 
@@ -108,12 +108,12 @@ if args.command == 'TotalProjectAnalysis':
 			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
-			depthProcess.communicate()
-			clusterProcess.communicate()
+			depthOut = depthProcess.communicate()
+			clusterOut = clusterProcess.communicate()
 
-			if depthProcess.stderr != '' or clusterProcess.stderr != '':
-				print('DepthError: ' + depthProcess.stderr)
-				print('ClusterError: ' + depthProcess.stderr)
+			if depthOut[1] != '' or clusterOut[1] != '':
+				print('DepthError: ' + depthOut[1])
+				print('ClusterError: ' + clusterOut[1])
 				sys.exit()
 
 
