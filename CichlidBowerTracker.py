@@ -84,16 +84,20 @@ if args.command == 'TotalProjectAnalysis':
 	ap_obj = AP()
 	if ap_obj.checkProjects(args.ProjectIDs):
 		sys.exit()
-
+	f = open('Analysis.log')
 	for projectID in args.ProjectIDs:
 		if args.Computer == 'SRG':
-			print('Analyzing projectID: ' + projectID)
+			print('Analyzing projectID: ' + projectID, file = f)
 			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
+			print(downloadProcess.stdout, file = f)
 			depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			depthOut = depthProcess.communicate()
 			clusterOut = clusterProcess.communicate()
+			print(depthOut[0], file = f)
+			print(clusterOut[0], file = f)
 			mlProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'MLClassification', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
+			print(mlProcess.stdout, file = f)
 
 			if depthOut[1] != '' or clusterOut[1] != '' or mlProcess.stderr != '':
 				print('DepthError: ' + depthOut[1])
@@ -101,15 +105,18 @@ if args.command == 'TotalProjectAnalysis':
 				print('MLError: ' + mlProcess.stderr)
 				sys.exit()
 
-			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
+			backupProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 
 		elif args.Computer == 'NURF':
-			print('Analyzing projectID: ' + projectID)
+			print('Analyzing projectID: ' + projectID, file = f)
 			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Download', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
+			print(downloadProcess.stdout, file = f)
 			depthProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Depth', projectID, '-w', '1'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			clusterProcess = subprocess.Popen(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Cluster', projectID, '-w', '23'], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			depthOut = depthProcess.communicate()
 			clusterOut = clusterProcess.communicate()
+			print(depthOut[0], file = f)
+			print(clusterOut[0], file = f)
 
 			if depthOut[1] != '' or clusterOut[1] != '':
 				print('DepthError: ' + depthOut[1])
@@ -118,7 +125,7 @@ if args.command == 'TotalProjectAnalysis':
 
 
 			downloadProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
-	
+	f.close()	
 	summarizeProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'UpdateAnalysisSummary'])
 
 
