@@ -141,6 +141,7 @@ class VideoPreparer:
 						assert out_data.shape == (self.videoObj.width, self.HMMsecs)
 					except AssertionError:
 						pdb.set_trace()
+			print(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy')
 			subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
 		print()
 
