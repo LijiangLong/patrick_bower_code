@@ -99,12 +99,16 @@ if args.command == 'TotalProjectAnalysis':
 			mlProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'MLClassification', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			print(mlProcess.stdout, file = f)
 			print(mlProcess.stderr, file = f)
-
-			"""if depthOut[1] != '' or clusterOut[1] != '' or mlProcess.stderr != '':
+"""
+			if depthOut[1] != '':
 				print('DepthError: ' + depthOut[1])
+
+			if clusterOut[1] != '': 
 				print('ClusterError: ' + clusterOut[1])
+"""
+			if mlProcess.stderr != '':
 				print('MLError: ' + mlProcess.stderr)
-				sys.exit()"""
+				sys.exit()
 
 			backupProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 
