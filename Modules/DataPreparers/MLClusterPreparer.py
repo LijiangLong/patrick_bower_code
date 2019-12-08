@@ -47,7 +47,7 @@ class MLClusterPreparer:
 		clips = [x for x in os.listdir(self.projFileManager.localAllClipsDir) if '.mp4' in x]
 		assert len(clips) != 0
 
-		with open(self.projFileManager.localMasterDir + 'MeansAll.csv', 'w') as f, open(self.projFileManager.localMasterDir + 'cichlids_test_list.txt', 'w') as g:
+		with open(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', 'w') as f, open(self.projFileManager.localProcessedClipsDir + 'cichlids_test_list.txt', 'w') as g:
 			print('Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB', file = f)
 			for clip in clips:
 				label = self.videoClasses[0] # Need to temporarily assign the clip to a label - just pick the first
@@ -76,19 +76,19 @@ class MLClusterPreparer:
 				print(clip.replace('.mp4', '') + ',' + ','.join([str(x) for x in mean]) + ',' + ','.join([str(x) for x in std]), file = f)
 				print(label + '/' + clip.replace('.mp4',''), file = g)
 
-		subprocess.run(['touch', self.projFileManager.localMasterDir + 'cichlids_train_list.txt'])
+		subprocess.run(['touch', self.projFileManager.localProcessedClipsDir + 'cichlids_train_list.txt'])
 
 
-		dt = pd.read_csv(self.projFileManager.localMasterDir + 'MeansAll.csv', sep = ',')
+		dt = pd.read_csv(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', sep = ',')
 		dt['MeanID'] = dt.apply(lambda row: row.Clip.split('__')[0], axis = 1)
 		means = dt.groupby('MeanID').mean()
 
-		with open(self.projFileManager.localMasterDir + 'Means.csv', 'w') as f:
+		with open(self.projFileManager.localProcessedClipsDir + 'Means.csv', 'w') as f:
 			print('meanID,redMean,greenMean,blueMean,redStd,greenStd,blueStd', file = f)
 			for row in means.itertuples():
 				print(row.Index + ',' + str(row.MeanR) + ',' + str(row.MeanG) + ',' + str(row.MeanB) + ',' + str(row.StdR) + ',' + str(row.StdG) + ',' + str(row.StdB), file = f)
 
-		with open(self.projFileManager.localMasterDir + 'AnnotationFile.csv', 'w') as f:
+		with open(self.projFileManager.localProcessedClipsDir + 'AnnotationFile.csv', 'w') as f:
 			print('Location,Dataset,Label,MeanID', file = f)
 			for row in dt.itertuples():
 				print(row.Clip + ',Test,' + label + ',' + row.MeanID, file = f)
@@ -97,8 +97,8 @@ class MLClusterPreparer:
 		command = []
 		command += ['python3', self.mlFileManager.localVideoPythonJsonFile]
 		command += [self.mlFileManager.localVideoClassesFile]
-		command += [self.projFileManager.localMasterDir + 'cichlids_train_list.txt']
-		command += [self.projFileManager.localMasterDir + 'cichlids_test_list.txt']
+		command += [self.projFileManager.localProcessedClipsDir + 'cichlids_train_list.txt']
+		command += [self.projFileManager.localProcessedClipsDir + 'cichlids_test_list.txt']
 		command += [self.projFileManager.localMasterDir + 'cichlids.json']
 		subprocess.call(command)
 
@@ -113,8 +113,8 @@ class MLClusterPreparer:
 		command['--root_path'] = self.projFileManager.localMasterDir
 		command['--n_epochs'] = '1'
 		command['--pretrain_path'] = self.mlFileManager.localVideoModelFile
-		command['--mean_file'] = self.projFileManager.localMasterDir + 'Means.csv'
-		command['--annotation_file'] = self.projFileManager.localMasterDir + 'AnnotationFile.csv'
+		command['--mean_file'] = self.projFileManager.localProcessedClipsDir + 'Means.csv'
+		command['--annotation_file'] = self.projFileManager.localProcessedClipsDir + 'AnnotationFile.csv'
 		command['--annotation_path'] = 'cichlids.json'
 		command['--batch_size'] = str(int(int(command['--batch_size'])*2))
 		command['--video_path'] = 'AllClips'
