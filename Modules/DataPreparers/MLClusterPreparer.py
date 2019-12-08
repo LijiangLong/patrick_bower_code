@@ -47,7 +47,7 @@ class MLClusterPreparer:
 		clips = [x for x in os.listdir(self.projFileManager.localAllClipsDir) if '.mp4' in x]
 		assert len(clips) != 0
 
-		with open(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', 'w') as f, open(self.projFileManager.localProcessedClipsDir + 'cichlids_test_list.txt', 'w') as g:
+		with open(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', 'w') as f, open(self.projFileManager.localMasterDir + 'cichlids_test_list.txt', 'w') as g:
 			print('Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB', file = f)
 			for clip in clips:
 				label = self.videoClasses[0] # Need to temporarily assign the clip to a label - just pick the first
@@ -74,9 +74,9 @@ class MLClusterPreparer:
 				mean = img.mean(axis = (0,1))
 				std = img.std(axis = (0,1))
 				print(clip.replace('.mp4', '') + ',' + ','.join([str(x) for x in mean]) + ',' + ','.join([str(x) for x in std]), file = f)
-				print(self.projFileManager.processedClipDir + '/' + label + '/' + clip.replace('.mp4',''), file = g)
+				print(self.projFileManager.processedClipDir + label + '/' + clip.replace('.mp4',''), file = g)
 
-		subprocess.run(['touch', self.projFileManager.localProcessedClipsDir + 'cichlids_train_list.txt'])
+		subprocess.run(['touch', self.projFileManager.localMasterDir + 'cichlids_train_list.txt'])
 
 
 		dt = pd.read_csv(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', sep = ',')
@@ -97,8 +97,8 @@ class MLClusterPreparer:
 		command = []
 		command += ['python3', self.mlFileManager.localVideoPythonJsonFile]
 		command += [self.mlFileManager.localVideoClassesFile]
-		command += [self.projFileManager.localProcessedClipsDir + 'cichlids_train_list.txt']
-		command += [self.projFileManager.localProcessedClipsDir + 'cichlids_test_list.txt']
+		command += [self.projFileManager.localMasterDir + 'cichlids_train_list.txt']
+		command += [self.projFileManager.localMasterDir + 'cichlids_test_list.txt']
 		command += [self.projFileManager.localMasterDir + 'cichlids.json']
 		subprocess.call(command)
 
