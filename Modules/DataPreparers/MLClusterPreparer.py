@@ -74,7 +74,7 @@ class MLClusterPreparer:
 				mean = img.mean(axis = (0,1))
 				std = img.std(axis = (0,1))
 				print(clip.replace('.mp4', '') + ',' + ','.join([str(x) for x in mean]) + ',' + ','.join([str(x) for x in std]), file = f)
-				print(self.processedClipDir + '/' + label + '/' + clip.replace('.mp4',''), file = g)
+				print(self.projFileManager.processedClipDir + '/' + label + '/' + clip.replace('.mp4',''), file = g)
 
 		subprocess.run(['touch', self.projFileManager.localProcessedClipsDir + 'cichlids_train_list.txt'])
 
