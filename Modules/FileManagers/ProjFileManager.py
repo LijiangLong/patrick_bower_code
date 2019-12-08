@@ -208,7 +208,7 @@ class ProjFileManager():
 				subprocess.run(['rm', '-f', self.localMasterDir + tar_directory])
 
 		else:
-			output = subprocess.run(['rclone', 'copy', self.cloudMasterDir + directory, self.localMasterDir + directory], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
+			output = subprocess.run(['rclone', 'copy', self.cloudMasterDir + directory, self.localMasterDir + directory, '--exclude', '*.mp4'], stderr = subprocess.PIPE, stdout = subprocess.PIPE)
 			if not os.path.exists(self.localMasterDir + directory):
 				raise FileNotFoundError('Unable to download ' + directory + ' from ' + self.cloudMasterDir)
 
