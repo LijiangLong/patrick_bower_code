@@ -117,7 +117,7 @@ class MLClusterPreparer:
 		command['--annotation_file'] = self.projFileManager.localMasterDir + 'AnnotationFile.csv'
 		command['--annotation_path'] = 'cichlids.json'
 		command['--batch_size'] = str(int(int(command['--batch_size'])*2))
-		command['--video_path'] = 'AllClips'
+		command['--video_path'] = ''
 
 		resultsDirectory = 'prediction/'
 		shutil.rmtree(self.projFileManager.localMasterDir + resultsDirectory) if os.path.exists(self.projFileManager.localMasterDir + resultsDirectory) else None
