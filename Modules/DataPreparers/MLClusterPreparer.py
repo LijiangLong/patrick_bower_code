@@ -139,7 +139,7 @@ class MLClusterPreparer:
 		softmax = dt.apply(scipy.special.softmax, axis = 1)
 		prediction = pd.concat([softmax.idxmax(axis=1).rename(self.mlFileManager.vModelID + '_pred'), softmax.max(axis=1).rename(self.mlFileManager.vModelID + '_conf')], axis=1)
 		prediction['ClipName'] = prediction.apply(lambda row: row.name.split('/')[-1], axis = 1)
-		allClusterData = pd.read_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
+		allClusterData = pd.read_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',', index_col = 'LID')
 		allClusterData = pd.merge(allClusterData, prediction, how = 'left', left_on = 'ClipName', right_on = 'ClipName')
 		allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
 
