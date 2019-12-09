@@ -47,7 +47,7 @@ class MLClusterPreparer:
 		clips = [x for x in os.listdir(self.projFileManager.localAllClipsDir) if '.mp4' in x]
 		assert len(clips) != 0
 
-		with open(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', 'w') as f, open(self.projFileManager.localMasterDir + 'cichlids_test_list.txt', 'w') as g:
+		with open(self.projFileManager.localMasterDir + 'MeansAll.csv', 'w') as f, open(self.projFileManager.localMasterDir + 'cichlids_test_list.txt', 'w') as g:
 			print('Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB', file = f)
 			for clip in clips:
 				label = self.videoClasses[0] # Need to temporarily assign the clip to a label - just pick the first
