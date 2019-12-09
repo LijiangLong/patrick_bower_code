@@ -52,7 +52,7 @@ class MLClusterPreparer:
 			for clip in clips:
 				label = self.videoClasses[0] # Need to temporarily assign the clip to a label - just pick the first
 					
-				outDirectory = self.projFileManager.localProcessedClipsDir + label + '/' + clip.replace('.mp4','') + '/'
+				outDirectory = self.projFileManager.localMasterDir + label + '/' + clip.replace('.mp4','') + '/'
 
 				shutil.rmtree(outDirectory) if os.path.exists(outDirectory) else None
 				os.makedirs(outDirectory) 
@@ -74,21 +74,21 @@ class MLClusterPreparer:
 				mean = img.mean(axis = (0,1))
 				std = img.std(axis = (0,1))
 				print(clip.replace('.mp4', '') + ',' + ','.join([str(x) for x in mean]) + ',' + ','.join([str(x) for x in std]), file = f)
-				print(self.projFileManager.processedClipDir + label + '/' + clip.replace('.mp4',''), file = g)
+				print(label + '/' + clip.replace('.mp4',''), file = g)
 
 		subprocess.run(['touch', self.projFileManager.localMasterDir + 'cichlids_train_list.txt'])
 
 
-		dt = pd.read_csv(self.projFileManager.localProcessedClipsDir + 'MeansAll.csv', sep = ',')
+		dt = pd.read_csv(self.projFileManager.localMasterDir + 'MeansAll.csv', sep = ',')
 		dt['MeanID'] = dt.apply(lambda row: row.Clip.split('__')[0], axis = 1)
 		means = dt.groupby('MeanID').mean()
 
-		with open(self.projFileManager.localProcessedClipsDir + 'Means.csv', 'w') as f:
+		with open(self.projFileManager.localMasterDir + 'Means.csv', 'w') as f:
 			print('meanID,redMean,greenMean,blueMean,redStd,greenStd,blueStd', file = f)
 			for row in means.itertuples():
 				print(row.Index + ',' + str(row.MeanR) + ',' + str(row.MeanG) + ',' + str(row.MeanB) + ',' + str(row.StdR) + ',' + str(row.StdG) + ',' + str(row.StdB), file = f)
 
-		with open(self.projFileManager.localProcessedClipsDir + 'AnnotationFile.csv', 'w') as f:
+		with open(self.projFileManager.localMasterDir + 'AnnotationFile.csv', 'w') as f:
 			print('Location,Dataset,Label,MeanID', file = f)
 			for row in dt.itertuples():
 				print(row.Clip + ',Test,' + label + ',' + row.MeanID, file = f)
@@ -113,8 +113,8 @@ class MLClusterPreparer:
 		command['--root_path'] = self.projFileManager.localMasterDir
 		command['--n_epochs'] = '1'
 		command['--pretrain_path'] = self.mlFileManager.localVideoModelFile
-		command['--mean_file'] = self.projFileManager.localProcessedClipsDir + 'Means.csv'
-		command['--annotation_file'] = self.projFileManager.localProcessedClipsDir + 'AnnotationFile.csv'
+		command['--mean_file'] = self.projFileManager.localMasterDir + 'Means.csv'
+		command['--annotation_file'] = self.projFileManager.localMasterDir + 'AnnotationFile.csv'
 		command['--annotation_path'] = 'cichlids.json'
 		command['--batch_size'] = str(int(int(command['--batch_size'])*2))
 		command['--video_path'] = 'AllClips'
