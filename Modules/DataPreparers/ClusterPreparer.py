@@ -11,12 +11,13 @@ class ClusterPreparer():
 	# 3. Automatically identifies bower location
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
-	def __init__(self, projFileManager, workers):
+	def __init__(self, projFileManager, workers, videoIndex):
 
 		self.__version__ = '1.0.0'
 
 		self.projFileManager = projFileManager
 		self.workers = workers
+		self.videoIndex = videoIndex
 
 
 	def validateInputData(self):
@@ -47,9 +48,13 @@ class ClusterPreparer():
 		clusterData = []
 		self.vp_objs = []
 		for index in range(len(self.lp.movies)):
-			print('Processing video: ' + self.lp.movies[index].mp4_file + ',,Time: ' + str(datetime.datetime.now()))
 			self.vp_objs.append(VP(self.projFileManager, index, self.workers))
-			clusterData.append(self.vp_objs[index].processVideo())
-		allClusterData = pd.concat(clusterData)
-		allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
+			if self.videoIndex is None or index == self.videoIndex:
+				print('Processing video: ' + self.lp.movies[index].mp4_file + ',,Time: ' + str(datetime.datetime.now()))
+				self.vp_objs[index].processVideo()
+			if self.videoIndex is None or self.videoIndex < 0:
+				clusterData.append(self.vp_objs[index].readClusterData())
+		if self.videoIndex is None or self.videoIndex < 0:
+			allClusterData = pd.concat(clusterData)
+			allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
 

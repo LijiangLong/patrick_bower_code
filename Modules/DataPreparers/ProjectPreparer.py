@@ -43,8 +43,8 @@ class ProjectPreparer():
 		self.createUploadFile(dp_obj.uploads)
 		self.createAnalysisUpdate('Depth', dp_obj)
 
-	def runClusterAnalysis(self):
-		cp_obj = CP(self.projFileManager, self.workers)
+	def runClusterAnalysis(self, videoIndex):
+		cp_obj = CP(self.projFileManager, self.workers, videoIndex)
 		cp_obj.validateInputData()
 		cp_obj.runClusterAnalysis()
 		self.createUploadFile(cp_obj.uploads)
