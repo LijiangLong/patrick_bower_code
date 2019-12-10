@@ -23,12 +23,11 @@ class VideoLoader(data.Dataset):
 				self.labels[videofile] = label
 				self.videofiles.append(videofile)
 
-
 	def __getitem__(self, index):
 
 		# Read in video
 		video = vp.vread(self.videofiles[index]) #(t,w,h,c)
-        video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
+		video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
 		means = data[:,0].mean() # r,g,b
