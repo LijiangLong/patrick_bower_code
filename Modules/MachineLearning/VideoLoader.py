@@ -1,8 +1,6 @@
-import torch.utils.data as data
 import os
-import torchvision.models.video
 from torchvision import transforms
-
+from skvideo import io as vp
 
 #torchvision.models.video.r3d_18(pretrained=False, progress=True, **kwargs)
 
@@ -30,8 +28,8 @@ class VideoLoader(data.Dataset):
 		video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
-		means = data[:,0].mean() # r,g,b
-		stds = data[:,0].std() # r,g,b
+		means = video[:,0].mean() # r,g,b
+		stds = video[:,0].std() # r,g,b
 		
 		# The final video size is smaller than the original video
 		t_cut = video.shape[1] - self.output_shape[0] # how many frames to cut out: 30
