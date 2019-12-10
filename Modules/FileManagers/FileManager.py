@@ -1,6 +1,7 @@
 import os, subprocess, pdb
 from Modules.FileManagers.ProjFileManager import ProjFileManager as ProjFM
 from Modules.FileManagers.mlFileManager import MLFileManager as MLFM
+from Modules.FileManagers.AnFileManager import AnFileManager as AnFM
 
 class FileManager():
 	def __init__(self):
@@ -27,6 +28,9 @@ class FileManager():
 
 	def retMLFileManager(self):
 		return MLFM(self.localMasterDir, self.cloudMasterDir)
+
+	def retAnFileManager(self):
+		return AnFM(self.localMasterDir, self.cloudMasterDir)
 
 	def createDirs(self):
 		self._createDirectory(self.localUploadDir)
