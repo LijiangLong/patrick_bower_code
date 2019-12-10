@@ -1,4 +1,4 @@
-import os, subprocess, pdb
+import os, subprocess, pdb, random
 import pandas as pd
 
 class AnFileManager():
@@ -30,8 +30,14 @@ class AnFileManager():
 			projectID = row.ClipName.split('__')[0]
 			clipName = row.ClipName + '.mp4'
 			label = row.ManualLabel
-			os.makedirs(self.localClipDir + 'LabeledClips/' + label, exist_ok = True)
-			output = subprocess.run(['mv', self.localClipDir + 'Clips/' + projectID + '/' + clipName, self.localClipDir + 'LabeledClips/' +  label], stderr = subprocess.PIPE, encoding = 'utf-8')
+
+			if random.randint(0,5) == 0:
+				dataset = 'validation/'
+			else:
+				dataset = 'training/'
+
+			os.makedirs(self.localClipDir + 'LabeledClips/' + dataset + label, exist_ok = True)
+			output = subprocess.run(['mv', self.localClipDir + 'Clips/' + projectID + '/' + clipName, self.localClipDir + 'LabeledClips/' + dataset + label], stderr = subprocess.PIPE, encoding = 'utf-8')
 			if output.stderr != '':
 				print(clipName)
 
