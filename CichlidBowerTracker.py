@@ -20,6 +20,7 @@ projectParser.add_argument('ProjectID', type = str, help = 'Which projectID you 
 projectParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
 projectParser.add_argument('-g', '--GPUs', type = int, help = 'Use if you want to control how many GPUs this analysis uses', default = 1)
 projectParser.add_argument('-d', '--DownloadOnly', action = 'store_true', help = 'Use if you only want to download the data for a specific analysis')
+projectParser.add_argument('-v', '--VideoIndex', type = int, help = 'Restrict cluster analysis to single video')
 
 totalProjectsParser = subparsers.add_parser('TotalProjectAnalysis', help='This command runs the entire pipeline on list of projectIDs')
 totalProjectsParser.add_argument('Computer', type = str, choices=['NURF','SRG','PACE'], help = 'What computer are you running this analysis from?')
@@ -66,7 +67,7 @@ elif args.command == 'ProjectAnalysis':
 		pp_obj.runDepthAnalysis()
 
 	elif args.AnalysisType == 'Cluster':
-		pp_obj.runClusterAnalysis()
+		pp_obj.runClusterAnalysis(args.VideoIndex)
 
 	elif args.AnalysisType == 'MLClassification':
 		pp_obj.runMLClusterClassifier()
