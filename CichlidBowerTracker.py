@@ -15,7 +15,7 @@ prepParser.add_argument('-p', '--ProjectIDs', nargs = '+', required = True, type
 prepParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
 
 projectParser = subparsers.add_parser('ProjectAnalysis', help='This command performs a single type of analysis of the project. It is meant to be chained together to perform the entire analysis')
-projectParser.add_argument('AnalysisType', type = str, choices=['Download','Depth','Cluster','MLClassification', 'MLFishDetection','Figures','Backup'], help = 'What type of analysis to perform')
+projectParser.add_argument('AnalysisType', type = str, choices=['Download','Depth','Cluster','CreateFrames','MLClassification', 'MLFishDetection','Figures','Backup'], help = 'What type of analysis to perform')
 projectParser.add_argument('ProjectID', type = str, help = 'Which projectID you want to identify')
 projectParser.add_argument('-w', '--Workers', type = int, help = 'Use if you want to control how many workers this analysis uses', default = 1)
 projectParser.add_argument('-g', '--GPUs', type = int, help = 'Use if you want to control how many GPUs this analysis uses', default = 1)
@@ -69,6 +69,9 @@ elif args.command == 'ProjectAnalysis':
 	elif args.AnalysisType == 'Cluster':
 		pp_obj.runClusterAnalysis(args.VideoIndex)
 
+	elif args.AnalysisType == 'CreateFrames':
+		pp_obj.createAnnotationFrames()
+
 	elif args.AnalysisType == 'MLClassification':
 		pp_obj.runMLClusterClassifier()
 
@@ -100,16 +103,26 @@ if args.command == 'TotalProjectAnalysis':
 			print(clusterOut[0], file = f)
 			mlProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'MLClassification', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')
 			print(mlProcess.stdout, file = f)
-			print(mlProcess.stderr, file = f)
+			#print(mlProcess.stderr, file = f)
 			
+			error = False
 			if depthOut[1] != '':
 				print('DepthError: ' + depthOut[1])
+				print('DepthError: ' + depthOut[1], file = f)
+				error = True
 
 			if clusterOut[1] != '': 
 				print('ClusterError: ' + clusterOut[1])
+				print('ClusterError: ' + clusterOut[1], file = f)
+				error = True
 			
 			if mlProcess.stderr != '':
 				print('MLError: ' + mlProcess.stderr)
+				print('MLError: ' + mlProcess.stderr, file = f)
+				error = True
+
+			if error:
+				f.close()
 				sys.exit()
 
 			backupProcess = subprocess.run(['python3', 'CichlidBowerTracker.py', 'ProjectAnalysis', 'Backup', projectID], stderr = subprocess.PIPE, stdout = subprocess.PIPE, encoding = 'utf-8')

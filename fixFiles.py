@@ -1,7 +1,48 @@
 import os, subprocess,pdb
-from Modules.FileManager import FileManager as FM
-from Modules.LogParser import LogParser as LP
+from Modules.FileManagers.FileManager import FileManager as FM
+from Modules.DataObjects.LogParser import LogParser as LP
 
+def fixLogFile(projectID, master_directory):
+	sdirs = os.listdir(master_directory + projectID)
+	badProject = False
+	if 'PrepFiles' in sdirs:
+		try:
+			logObj = LP(master_directory + projectID + '/Logfile.txt')
+		except UnboundLocalError:
+			print('Cant read logfile for: ' + projectID)
+			return False
+
+		with open(master_directory + projectID + '/Logfile.txt') as f:
+			#print('Fixing: ' + projectID)
+			for line in f:
+				if 'PiCameraStopped' in line:
+					if ',,' not in line:
+						print(projectID)
+						badProject = True
+
+	if badProject:
+		subprocess.run(['mv', master_directory + projectID + '/Logfile.txt', master_directory + projectID + '/Logfile.bu.txt'])
+		with open(master_directory + projectID + '/Logfile.bu.txt') as f, open(master_directory + projectID + '/Logfile.txt', 'w') as g:
+			#print('Fixing: ' + projectID)
+			for line in f:
+				if 'PiCameraStopped' in line and ',,' not in line:
+					print(line.rstrip().replace(',', ',,'), file = g)
+				else:
+					print(line.rstrip(), file = g)
+	return badProject
+
+def addLastRGBPic(projectID, master_directory):
+	sdirs = os.listdir(master_directory + projectID)
+	if 'PrepFiles' in sdirs:
+		try:
+			logObj = LP(master_directory + projectID + '/Logfile.txt')
+		except UnboundLocalError:
+			print('Cant read logfile for: ' + projectID)
+			return False
+		try:
+			subprocess.run(['cp', master_directory + projectID + '/' + logObj.movies[-1].pic_file, master_directory + projectID + '/PrepFiles/LastPiCameraRGB.jpg'])
+		except:
+			print('Error on ' + projectID)
 def addPrepFiles(projectID, master_directory):
 
 	sdirs = os.listdir(master_directory + projectID)
@@ -40,7 +81,7 @@ def tarFrameDir(projectID, master_directory):
 				os.makedirs(master_local_directory)
 
 			subprocess.run(['rclone', 'copy', master_cloud_directory + 'Frames', master_local_directory + 'Frames'])
-			output = subprocess.run(['tar', '-cvf', master_local_directory + 'Frames.tar', '-C', master_local_directory, 'Frames'], capture_output = True)
+			output = subprocess.run(['tar', '-cvf', master_local_directory + 'Frames.tar', '-C', master_local_directory, 'Frames'], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
 			subprocess.run(['rclone', 'copy', master_local_directory + 'Frames.tar', master_cloud_directory])
 
 			subprocess.run(['rm','-rf', master_local_directory])
@@ -111,14 +152,18 @@ def reorganizeClipFiles(master_directory):
 		subprocess.run(['tar', '-cvf', outdir[:-1] + '.tar', '-C', clipDir, projectID])
 
 master_directory = os.getenv('HOME') + '/Dropbox (GaTech)/McGrath/Apps/CichlidPiData/'
-reorganizeClipFiles(master_directory)
+#reorganizeClipFiles(master_directory)
 
-"""for projectID in os.listdir(master_directory):
+for projectID in os.listdir(master_directory):
 	try:
 		sdirs = os.listdir(master_directory + projectID)
 	except NotADirectoryError:
 		continue
-	projectID = '_newtray_Test'
+	#print(projectID)
 	#addPrepFiles(projectID, master_directory)
-	converth264s(projectID, master_directory)
-	break"""
+	#tarFrameDir(projectID, master_directory)
+	#converth264s(projectID, master_directory)
+	#addLastRGBPic(projectID, master_directory)
+	fixLogFile(projectID, master_directory)
+
+	
