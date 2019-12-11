@@ -41,6 +41,10 @@ class VideoPreparer:
 		subprocess.run(['rm', '-rf', self.videoObj.localTempDir])
 		return self.clusterData
 
+	def createAnnotationFrames(self):
+		self._validateVideo()
+		self._createAnnotationFrames()
+
 	def readClusterData(self):
 		self.clusterData = pd.read_csv(self.videoObj.localLabeledClustersFile, sep = ',', index_col = 'LID')
 
@@ -143,8 +147,10 @@ class VideoPreparer:
 						assert out_data.shape == (self.videoObj.width, self.HMMsecs)
 					except AssertionError:
 						pdb.set_trace()
-			print(self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy')
-			subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
+			
+			for j in range(self.workers):
+				block = i + j
+				subprocess.run(['rm', '-f', self.videoObj.localTempDir + 'Decompressed_' + str(block) + '.npy'])
 		print()
 
 	def _calculateHMM(self):

@@ -52,6 +52,7 @@ class ProjectPreparer():
 
 	def createAnnotationFrames(self):
 		cp_obj = CP(self.projFileManager, self.workers)
+		cp_obj.validateInputData()
 		cp_obj.createAnnotationFrames()
 		self.createUploadFile(cp_obj.uploads)
 

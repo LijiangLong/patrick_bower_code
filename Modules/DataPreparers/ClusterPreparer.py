@@ -62,7 +62,7 @@ class ClusterPreparer():
 		self.vp_objs = []
 		for index in range(len(self.lp.movies)):
 			vp_obj = VP(self.projFileManager, index, self.workers)
-			vp_obj._createAnnotationFrames()
+			vp_obj.createAnnotationFrames()
 		self.uploads = [(self.projFileManager.localManualLabelFramesDir, self.projFileManager.cloudMasterDir, '1')]
 
 
