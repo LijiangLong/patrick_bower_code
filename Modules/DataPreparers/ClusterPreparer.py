@@ -11,7 +11,7 @@ class ClusterPreparer():
 	# 3. Automatically identifies bower location
 	# 4. Analyze building, shape, and other pertinent info of the bower
 
-	def __init__(self, projFileManager, workers, videoIndex):
+	def __init__(self, projFileManager, workers, videoIndex = None):
 
 		self.__version__ = '1.0.0'
 
@@ -57,4 +57,13 @@ class ClusterPreparer():
 		if self.videoIndex is None or self.videoIndex < 0:
 			allClusterData = pd.concat(clusterData)
 			allClusterData.to_csv(self.projFileManager.localAllLabeledClustersFile, sep = ',')
+
+	def createAnnotationFrames(self):
+		self.vp_objs = []
+		for index in range(len(self.lp.movies)):
+			vp_obj = VP(self.projFileManager, index, self.workers)
+			vp_obj._createAnnotationFrames()
+		self.uploads = [(self.projFileManager.localManualLabelFramesDir, self.projFileManager.cloudMasterDir, '1')]
+
+
 

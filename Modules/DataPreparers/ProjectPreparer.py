@@ -50,6 +50,12 @@ class ProjectPreparer():
 		self.createUploadFile(cp_obj.uploads)
 		self.createAnalysisUpdate('Cluster', cp_obj)
 
+	def createAnnotationFrames(self):
+		cp_obj = CP(self.projFileManager, self.workers)
+		cp_obj.createAnnotationFrames()
+		self.createUploadFile(cp_obj.uploads)
+
+
 	def runMLClusterClassifier(self):
 		mlc_obj = MLP(self.projFileManager, self.mlFileManager)
 		mlc_obj.validateInputData()

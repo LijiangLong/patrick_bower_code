@@ -35,7 +35,9 @@ class VideoPreparer:
 		self._decompressVideo()
 		self._calculateHMM()
 		self._createClusters()
-		self._createAnnotationFiles()
+		self._createAnnotationVideos()
+		self._createAnnotationFrames()
+		
 		subprocess.run(['rm', '-rf', self.videoObj.localTempDir])
 		return self.clusterData
 
@@ -264,7 +266,7 @@ class VideoPreparer:
 		clusterData.to_csv(self.videoObj.localLabeledClustersFile, sep = ',')
 		self.clusterData = clusterData
 
-	def _createAnnotationFiles(self):
+	def _createAnnotationVideos(self):
 		print('  Creating small video clips for classification,,Time: ' + str(datetime.datetime.now())) 
 
 		# Clip creation is super slow so we do it in parallel
@@ -320,6 +322,7 @@ class VideoPreparer:
 			assert(os.path.exists(outName_out))
 		cap.release()
 
+	def _createAnnotationFrames(self):
 		print('  Creating frames for manual labeling,,Time: ' + str(datetime.datetime.now())) 
 
 		# Create frames for manual labeling
