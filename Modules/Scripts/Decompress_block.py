@@ -1,4 +1,4 @@
-import argparse, pdb, cv2
+import argparse, pdb, cv2, sys
 cv2.setNumThreads(1) 
 import numpy as np
 
@@ -22,11 +22,11 @@ for i in range(args.FirstTime, args.LastTime):
 	cap.set(cv2.CAP_PROP_POS_FRAMES, int(i*args.Framerate))
 	ret, frame = cap.read()
 	if not ret:
-		print('Error in Decompress_block.py')
-		print(i)
-		print(args)
-		raise Exception('Cant read frame')
-	ad[:,:,count] =  0.2125 * frame[:,:,2] + 0.7154 * frame[:,:,1] + 0.0721 * frame[:,:,0] #opencv does bgr instead of rgb
+		print('Couldnt read frame ' + str(i) in args.Videofile + '. Using last good frame', file = sys.stderr)
+		ad[:,:,count] =  ad[:,:,count-1]
+
+	else:
+		ad[:,:,count] =  0.2125 * frame[:,:,2] + 0.7154 * frame[:,:,1] + 0.0721 * frame[:,:,0] #opencv does bgr instead of rgb
 	count += 1
 cap.release()
 
