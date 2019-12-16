@@ -7,7 +7,7 @@ class FileManager():
 	def __init__(self):
 		self.system = 'computer' # Initially assume  that we are on a laptop/desktop/server
 
-		self.rcloneRemote = 'cichlidVideo'
+		self.rcloneRemote = 'd'
 		self.cloudMasterDir = self.rcloneRemote + ':McGrath/Apps/CichlidPiData/'
 
 		self.localMasterDir = os.getenv('HOME') + '/' + 'Temp/CichlidAnalyzer/'
