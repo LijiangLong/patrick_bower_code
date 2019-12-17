@@ -68,15 +68,16 @@ else:
 
 if args.mode == 'train':
 	# Modifing the last layer according to our data
-	pdb.set_trace()
+
 	model.fc = nn.Linear(in_features=512, out_features=args.num_classes, bias=True)
 
 	if not args.fine_tune:
 		for name,param in model.named_parameters():
-			param.requires_grad = False
+			param.requires_grad = True
 
 	# To parallalize the model. By default it uses all available gpu. 
 	# Set visible devices using CUDA_VISIBLE_DEVICE
+	pdb.set_trace()
 	device = torch.device("cuda:3")
 	model.to(device)
 
