@@ -41,7 +41,7 @@ class VideoLoader(data.Dataset):
 			new_t = random.randint(0,t_cut)
 			new_x = random.randint(int(x_cut/4), int(3*x_cut/4))
 			new_y = random.randint(int(y_cut/4), int(3*y_cut/4))
-		elif self.self.datatype == 'test':
+		elif self.self.datatype == 'val':
 			new_t = int(t_cut/2)
 			new_x = int(x_cut/2)
 			new_y = int(y_cut/2)
@@ -60,4 +60,4 @@ class VideoLoader(data.Dataset):
 		# Return tensor, label, and filename
 		return (transforms.ToTensor(cropped_data), self.labels[self.videofiles[i]], self.videofiles[i].split('/')[-1])
 
-videoLoader = VideoLoader('Clips/')
+
