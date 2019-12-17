@@ -20,7 +20,7 @@ class VideoLoader(data.Dataset):
 		for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
 			for videofile in [x for x in os.listdir(directory +'/'+ label) if '.mp4' in x]:
 				self.labels[videofile] = label
-				self.videofiles.append(videofile)
+				self.videofiles.append(directory +'/'+ label+'/'+videofile)
 
 	def __getitem__(self, index):
 
