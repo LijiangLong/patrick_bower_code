@@ -5,6 +5,7 @@ from torch import nn
 from torch import optim
 from torch.optim import lr_scheduler
 from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
 
 parser = argparse.ArgumentParser()
 
