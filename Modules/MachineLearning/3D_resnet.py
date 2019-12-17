@@ -68,8 +68,9 @@ else:
 
 if args.mode == 'train':
 	# Modifing the last layer according to our data
-	model.fc = nn.Linear(in_features=512, out_features=args.num_classes, bias=True)
 	pdb.set_trace()
+	model.fc = nn.Linear(in_features=512, out_features=args.num_classes, bias=True)
+
 	if not args.fine_tune:
 		for name,param in model.named_parameters():
 			param.requires_grad = False
