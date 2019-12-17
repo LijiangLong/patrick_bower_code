@@ -99,7 +99,7 @@ if args.mode == 'train':
 	valset = VideoLoader(args.val_dir, 'val', (90,112,112))
 	valset_loader = DataLoader(valset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory = True)
 
-	optimizer = optim.SGD(model.parameters, lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+	optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
 	scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=args.lr_patience)
 	criterion = nn.CrossEntropyLoss()
 
