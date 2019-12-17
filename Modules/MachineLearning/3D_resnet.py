@@ -1,6 +1,7 @@
 import argparse, torch, pdb
 from VideoLoader import VideoLoader
 import torchvision
+from torch import nn
 
 parser = argparse.ArgumentParser()
 
@@ -48,7 +49,7 @@ parser.add_argument('--batch_size', default=8, type=int,
 
 parser.add_argument('--num_workers', default=6, type=int,
 					help='number of threads to use')
-pdb.set_trace()
+
 args = parser.parse_args()
 
 if args.pretrain_path is not None:
@@ -68,7 +69,7 @@ else:
 if args.mode == 'train':
 	# Modifing the last layer according to our data
 	model.fc = nn.Linear(in_features=512, out_features=args.num_classes, bias=True)
-
+	pdb.set_trace()
 	if not args.fine_tune:
 		for name,param in model.named_parameters():
 			param.requires_grad = False
