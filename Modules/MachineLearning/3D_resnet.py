@@ -36,7 +36,7 @@ parser.add_argument('--results', default='/data/home/llong35/data/12_16_2019', t
 parser.add_argument('--num_classes', default=10, type=int,
 					help='number of video categories')
 
-parser.add_argument('--learning_rate', default=0.001, type=float,
+parser.add_argument('--learning_rate', default=0.01, type=float,
 					help='Learning rate of the model optimizer')
 
 parser.add_argument('--momentum', default=0.9, type=float, 
@@ -99,10 +99,13 @@ if args.mode == 'train':
 	valset = VideoLoader(args.val_dir, 'val', (90,112,112))
 	valset_loader = DataLoader(valset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, pin_memory = True)
 
-	optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-	pdb.set_trace()
-	scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=args.lr_patience)
+	# optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+
+	# scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=args.lr_patience)
+	optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 	criterion = nn.CrossEntropyLoss()
+	pdb.set_trace()
+
 
 	for epoch in range(args.epochs):
 		model.train()
