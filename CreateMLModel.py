@@ -1,6 +1,6 @@
 from Modules.FileManagers.FileManager import FileManager as FM
 import subprocess, pdb
-
+pdb.set_trace()
 anFM_obj = FM().retAnFileManager()
 
 labeledClipsDir = anFM_obj.prepareVideoAnnotation('10classLabels')
