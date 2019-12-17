@@ -2,6 +2,9 @@ import argparse, torch, pdb
 from VideoLoader import VideoLoader
 import torchvision
 from torch import nn
+from torch import optim
+from torch.optim import lr_scheduler
+from torch.autograd import Variable
 
 parser = argparse.ArgumentParser()
 
