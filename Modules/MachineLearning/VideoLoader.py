@@ -61,4 +61,8 @@ class VideoLoader(data.Dataset):
 		# Return tensor, label, and filename
 		return (transforms.ToTensor(cropped_data), self.labels[self.videofiles[i]], self.videofiles[i].split('/')[-1])
 
+	def __len__(self):
+		return len(self.videofiles)
+
+
 
