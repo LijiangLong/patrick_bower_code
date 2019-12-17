@@ -10,7 +10,7 @@ parser.add_argument('--model', default='r3d', type=str, choices = ['r3d', 'mc3',
 parser.add_argument('--pretrain_path', type=str,
 					help = 'Path of a previously trained model. If not provided, --model specifies the architecture to use')
 
-parser.add_argument('--pretrained', default=True, type=bool,
+parser.add_argument('--pre_trained', default=True, type=bool,
 					help='Use pretrained weights for model initialization')
 
 parser.add_argument('--fine_tune', default=False, type=bool,
