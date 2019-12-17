@@ -1,5 +1,6 @@
 import argparse, torch, pdb
 from VideoLoader import VideoLoader
+import torchvision
 
 parser = argparse.ArgumentParser()
 
