@@ -39,11 +39,11 @@ class VideoLoader(data.Dataset):
 		y_cut = video.shape[3] - self.output_shape[2] # how many pixels to cut out: 88
 
 		# Determine start and end indices for each dimension depending on datatype
-		if self.self.datatype == 'train':
+		if self.datatype == 'train':
 			new_t = random.randint(0,t_cut)
 			new_x = random.randint(int(x_cut/4), int(3*x_cut/4))
 			new_y = random.randint(int(y_cut/4), int(3*y_cut/4))
-		elif self.self.datatype == 'val':
+		elif self.datatype == 'val':
 			new_t = int(t_cut/2)
 			new_x = int(x_cut/2)
 			new_y = int(y_cut/2)
