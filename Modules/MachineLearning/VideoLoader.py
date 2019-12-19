@@ -28,9 +28,10 @@ class VideoLoader(data.Dataset):
 	def __getitem__(self, index):
 
 		# Read in video
-		pdb.set_trace()
 		video = vp.vread(self.videofiles[index]) #(t,w,h,c)
-		video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
+		video = np.transpose(video,(3,0,1,2)) #(c,t,w,h)
+
+		#video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
 		means = video[:,0].mean() # r,g,b
@@ -70,3 +71,6 @@ class VideoLoader(data.Dataset):
 
 
 
+trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
+pdb.set_trace()
+trainset.__getitem__(0)
