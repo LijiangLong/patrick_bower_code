@@ -34,8 +34,8 @@ class VideoLoader(data.Dataset):
 		#video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
-		means = np.reshape(video,(video.shape[0],-1)).mean() # r,g,b
-		stds = np.reshape(video,(video.shape[0],-1)).std() # r,g,b
+		means = np.reshape(video,(video.shape[0],-1)).mean(axis=1) # r,g,b
+		stds = np.reshape(video,(video.shape[0],-1)).std(axis=1) # r,g,b
 		
 		# The final video size is smaller than the original video
 		t_cut = video.shape[1] - self.output_shape[0] # how many frames to cut out: 30
@@ -64,7 +64,8 @@ class VideoLoader(data.Dataset):
 			cropped_video[c] = (cropped_video[c] - means[c])/stds[c]
 
 		# Return tensor, label, and filename
-		return (transforms.ToTensor(cropped_data), self.labels[self.videofiles[i]], self.videofiles[i].split('/')[-1])
+		filename = self.videofiles[index].split('/')[-1]
+		return (transforms.ToTensor(cropped_video), self.labels[filename], filename)
 
 	def __len__(self):
 		return len(self.videofiles)
