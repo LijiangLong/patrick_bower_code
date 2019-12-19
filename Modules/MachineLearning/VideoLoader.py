@@ -19,7 +19,7 @@ class VideoLoader(data.Dataset):
 		# Directionary and list to hold data
 		self.labels = {} # will hold the labels for each mp4
 		self.videofiles = [] # Holds the location of all the video files
-		label_to_number_file = '../../tenClass_v1.txt'
+		label_to_number_file = '/'.join(self.directory.split('/')[:-2])+'/tenClass_v1.txt'
 		self.label_to_number = {}
 		with open(label_to_number_file,'r') as input:
 			for line in input:
