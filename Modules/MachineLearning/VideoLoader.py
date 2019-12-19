@@ -2,6 +2,7 @@ import os
 from torchvision import transforms
 from skvideo import io as vp
 from torch.utils import data
+import torch
 import numpy as np
 import random
 import pdb
@@ -65,7 +66,7 @@ class VideoLoader(data.Dataset):
 
 		# Return tensor, label, and filename
 		filename = self.videofiles[index].split('/')[-1]
-		return (transforms.ToTensor(cropped_video), self.labels[filename], filename)
+		return (torch.tensor(cropped_video), self.labels[filename], filename)
 
 	def __len__(self):
 		return len(self.videofiles)
