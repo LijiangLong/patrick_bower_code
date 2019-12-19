@@ -106,13 +106,14 @@ if args.mode == 'train':
 	optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 	criterion = nn.CrossEntropyLoss()
 
-
+	pdb.set_trace()
 	for epoch in range(args.epochs):
 		model.train()
 		start = time()
 		iteration = 0
 		avg_loss = 0
 		correct = 0
+
 		for batch_idx, (data, target, path) in enumerate(trainset_loader):
 			#target = target.cuda(async = True)
 			
