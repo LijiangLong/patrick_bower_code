@@ -19,6 +19,13 @@ class VideoLoader(data.Dataset):
 		# Directionary and list to hold data
 		self.labels = {} # will hold the labels for each mp4
 		self.videofiles = [] # Holds the location of all the video files
+		label_to_number_file = '../../tenClass_v1.txt'
+		self.label_to_number = {}
+		with open(label_to_number_file,'r') as input:
+			for line in input:
+				number,category_short,category_long = line.rstrip().split()
+				self.label_to_number[category_short] = number
+
 
 		# Add videofiles and 
 		for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
@@ -66,7 +73,7 @@ class VideoLoader(data.Dataset):
 
 		# Return tensor, label, and filename
 		filename = self.videofiles[index].split('/')[-1]
-		return (torch.from_numpy(cropped_video.copy()), self.labels[filename], filename)
+		return (torch.from_numpy(cropped_video.copy()), self.label_to_number[self.labels[filename]], filename)
 
 	def __len__(self):
 		return len(self.videofiles)
