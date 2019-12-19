@@ -105,7 +105,6 @@ if args.mode == 'train':
 	# scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=args.lr_patience)
 	optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 	criterion = nn.CrossEntropyLoss()
-	pdb.set_trace()
 
 
 	for epoch in range(args.epochs):

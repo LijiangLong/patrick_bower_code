@@ -4,6 +4,7 @@ from skvideo import io as vp
 from torch.utils import data
 import numpy as np
 import random
+import pdb
 
 #torchvision.models.video.r3d_18(pretrained=False, progress=True, **kwargs)
 
@@ -27,6 +28,7 @@ class VideoLoader(data.Dataset):
 	def __getitem__(self, index):
 
 		# Read in video
+		pdb.set_trace()
 		video = vp.vread(self.videofiles[index]) #(t,w,h,c)
 		video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
