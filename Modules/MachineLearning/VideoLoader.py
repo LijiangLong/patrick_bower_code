@@ -34,8 +34,8 @@ class VideoLoader(data.Dataset):
 		#video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
-		means = video[:,0].mean() # r,g,b
-		stds = video[:,0].std() # r,g,b
+		means = np.reshape(video,(video.shape[0],-1)).mean() # r,g,b
+		stds = np.reshape(video,(video.shape[0],-1)).std() # r,g,b
 		
 		# The final video size is smaller than the original video
 		t_cut = video.shape[1] - self.output_shape[0] # how many frames to cut out: 30
@@ -57,7 +57,7 @@ class VideoLoader(data.Dataset):
 
 		# Flip the video if training
 		if random.randint(0,2) == 0 and self.datatype == 'train':
-			cropped_video = np.flip(cropped_data, axis = 1)
+			cropped_video = np.flip(cropped_video, axis = 1)
 
 		# Normalize each channel data
 		for c in range(3):
