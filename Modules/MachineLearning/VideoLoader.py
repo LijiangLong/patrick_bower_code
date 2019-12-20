@@ -24,7 +24,7 @@ class VideoLoader(data.Dataset):
 		with open(label_to_number_file,'r') as input:
 			for line in input:
 				number,category_short,category_long = line.rstrip().split()
-				self.label_to_number[category_short] = number
+				self.label_to_number[category_short] = int(number)
 
 
 		# Add videofiles and 
