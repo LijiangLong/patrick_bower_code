@@ -49,7 +49,7 @@ parser.add_argument('--weight_decay', default=1e-3, type=float,
 parser.add_argument('--epochs', default=50, type=int,
 					help='Number of epoch to train the model')
 
-parser.add_argument('--batch_size', default=8, type=int,
+parser.add_argument('--batch_size', default=2, type=int,
 					help='batch size for training and testing dataloader')
 
 parser.add_argument('--num_workers', default=6, type=int,
@@ -85,9 +85,9 @@ if args.mode == 'train':
 
 	# device = torch.device("cuda:3")
 	# model.to(device)
+
 	model = model.cuda()
-	#model = model.cuda()
-	#model = nn.DataParallel(model, device_ids=None)
+	model = nn.DataParallel(model, device_ids=None)
 
 	# Optimizer for the model
 	optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
