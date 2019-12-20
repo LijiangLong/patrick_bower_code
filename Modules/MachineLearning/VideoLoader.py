@@ -68,9 +68,10 @@ class VideoLoader(data.Dataset):
 			cropped_video = np.flip(cropped_video, axis = 1)
 
 		# Normalize each channel data
+		temp = np.zeros(cropped_video.shape)
 		for c in range(3):
-			cropped_video[c] = (cropped_video[c] - means[c])/stds[c]
-
+			temp[c] = (cropped_video[c] - means[c])/stds[c]
+		cropped_video = temp
 		# Return tensor, label, and filename
 		filename = self.videofiles[index].split('/')[-1]
 		return (torch.from_numpy(cropped_video.copy()), torch.tensor(self.label_to_number[self.labels[filename]]), filename)
