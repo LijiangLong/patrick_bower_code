@@ -83,9 +83,9 @@ if args.mode == 'train':
 	# To parallalize the model. By default it uses all available gpu. 
 	# Set visible devices using CUDA_VISIBLE_DEVICE
 
-	device = torch.device("cuda:3")
-	model.to(device)
-
+	# device = torch.device("cuda:3")
+	# model.to(device)
+	model = model.cuda()
 	#model = model.cuda()
 	#model = nn.DataParallel(model, device_ids=None)
 
@@ -107,6 +107,7 @@ if args.mode == 'train':
 	optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 	criterion = nn.CrossEntropyLoss()
 
+
 	pdb.set_trace()
 	for epoch in range(args.epochs):
 		model.train()
@@ -116,11 +117,10 @@ if args.mode == 'train':
 		correct = 0
 
 		for batch_idx, (data, target, path) in enumerate(trainset_loader):
-			#target = target.cuda(async = True)
-			
+			targets = targets.cuda(async=True)
 			data = Variable(data)
 			target = Variable(target)
-			
+
 			output = model(data)
 			
 			lossFunction = nn.CrossEntropyLoss()
