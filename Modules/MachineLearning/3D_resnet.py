@@ -49,7 +49,7 @@ parser.add_argument('--weight_decay', default=1e-3, type=float,
 parser.add_argument('--epochs', default=50, type=int,
 					help='Number of epoch to train the model')
 
-parser.add_argument('--batch_size', default=2, type=int,
+parser.add_argument('--batch_size', default=4, type=int,
 					help='batch size for training and testing dataloader')
 
 parser.add_argument('--num_workers', default=6, type=int,
@@ -87,11 +87,7 @@ if args.mode == 'train':
 	# model.to(device)
 
 	model = model.cuda()
-	model = nn.DataParallel(model, device_ids=None)
-
-	# Optimizer for the model
-	optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
-
+	#model = nn.DataParallel(model, device_ids=None)
 	# Load the trainset
 
 	trainset = VideoLoader(args.train_dir, 'train', (90,112,112))
@@ -106,6 +102,8 @@ if args.mode == 'train':
 	# scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=args.lr_patience)
 	optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 	criterion = nn.CrossEntropyLoss()
+	criterion = criterion.cuda()
+	log_interval = 1
 
 
 	pdb.set_trace()
@@ -121,10 +119,8 @@ if args.mode == 'train':
 			data = data.float()
 			data = data.cuda(async=True)
 			output = model(data)
-			lossFunction = nn.CrossEntropyLoss()
-			lossFunction = lossFunction.cuda()
 			
-			loss = lossFunction(output, target)
+			loss = criterion(output, target)
 			avg_loss += loss
 
 			optimizer.zero_grad()
@@ -166,13 +162,8 @@ if args.mode == 'train':
 
 			data = Variable(data)
 			target = Variable(target)
-
 			output = model(data)
-
-			lossFunction = nn.CrossEntropyLoss()
-			lossFunction = lossFunction.cuda()
-
-			loss = lossFunction(output, target)
+			loss = criterion(output, target)
 			avg_loss += loss
 
 
