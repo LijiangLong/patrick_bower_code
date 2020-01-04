@@ -82,7 +82,6 @@ class VideoLoader(data.Dataset):
 
 
 trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
-pdb.set_trace()
 for i in range(trainset.__len__()):
 	if i == 6125:
 		pdb.set_trace()
