@@ -5,6 +5,7 @@ from torch.utils import data
 import torch
 import numpy as np
 import random
+from time import time
 import pdb
 
 #torchvision.models.video.r3d_18(pretrained=False, progress=True, **kwargs)
@@ -34,10 +35,16 @@ class VideoLoader(data.Dataset):
 				self.videofiles.append(directory +'/'+ label+'/'+videofile)
 
 	def __getitem__(self, index):
+		start = time()
 
 		# Read in video
 		video = vp.vread(self.videofiles[index]) #(t,w,h,c)
+		print('read video takes {}'.format(time()-start))
+		start = time()
+
 		video = np.transpose(video,(3,0,1,2)) #(c,t,w,h)
+		print('first transpose takes {}'.format(time()-start))
+		start = time()
 
 		#video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
@@ -49,7 +56,8 @@ class VideoLoader(data.Dataset):
 		t_cut = video.shape[1] - self.output_shape[0] # how many frames to cut out: 30
 		x_cut = video.shape[2] - self.output_shape[1] # how many pixels to cut out: 88
 		y_cut = video.shape[3] - self.output_shape[2] # how many pixels to cut out: 88
-
+		print('video normalization takes {}'.format(time()-start))
+		start = time()
 		# Determine start and end indices for each dimension depending on datatype
 		if self.datatype == 'train':
 			new_t = random.randint(0,t_cut)
@@ -82,6 +90,7 @@ class VideoLoader(data.Dataset):
 
 
 trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
+trainset.__getitem__(0)
 for i in range(trainset.__len__()):
 	if i == 6125:
 		pdb.set_trace()
