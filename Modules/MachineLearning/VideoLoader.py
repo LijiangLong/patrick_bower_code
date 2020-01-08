@@ -70,16 +70,22 @@ class VideoLoader(data.Dataset):
 
 		# Crop the video
 		cropped_video = video[:,new_t:new_t + self.output_shape[0], new_x: new_x + self.output_shape[1], new_y: new_y + self.output_shape[2]]
-
+		print('cropping takes {}'.format(time()-start))
+		start = time()
 		# Flip the video if training
-		if random.randint(0,2) == 0 and self.datatype == 'train':
-			cropped_video = np.flip(cropped_video, axis = 1)
+		# if random.randint(0,2) == 0 and self.datatype == 'train':
+		# 	cropped_video = np.flip(cropped_video, axis = 1)
+		cropped_video = np.flip(cropped_video, axis=1)
+		print('flip takes {}'.format(time()-start))
+		start = time()
 
 		# Normalize each channel data
 		temp = np.zeros(cropped_video.shape)
 		for c in range(3):
 			temp[c] = (cropped_video[c] - means[c])/stds[c]
 		cropped_video = temp
+		print('normalize each channel takes {}'.format(time()-start))
+		start = time()
 		# Return tensor, label, and filename
 		filename = self.videofiles[index].split('/')[-1]
 		return (torch.from_numpy(cropped_video.copy()), torch.tensor(self.label_to_number[self.labels[filename]]), filename)
@@ -91,8 +97,8 @@ class VideoLoader(data.Dataset):
 
 trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
 trainset.__getitem__(0)
-for i in range(trainset.__len__()):
-	if i == 6125:
-		pdb.set_trace()
-
-	trainset.__getitem__(i)
+# for i in range(trainset.__len__()):
+# 	if i == 6125:
+# 		pdb.set_trace()
+#
+# 	trainset.__getitem__(i)
