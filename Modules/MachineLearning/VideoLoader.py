@@ -50,8 +50,10 @@ class VideoLoader(data.Dataset):
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
 		means = np.reshape(video,(video.shape[0],-1)).mean(axis=1) # r,g,b
+		print('mean calculation takes {}'.format(time() - start))
+		start = time()
 		stds = np.reshape(video,(video.shape[0],-1)).std(axis=1) # r,g,b
-		print('mean and std calculation takes {}'.format(time() - start))
+		print('std calculation takes {}'.format(time() - start))
 		start = time()
 		
 		# The final video size is smaller than the original video
