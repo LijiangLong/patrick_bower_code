@@ -35,8 +35,10 @@ class VideoLoader(data.Dataset):
 		with open(means_file,'r') as input:
 			for line in input:
 				ProjectID,VideoID,Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
-				self.means[Clip] = np.array([MeanR,MeanG,MeanB])
-				self.vars[Clip] = np.array([StdR, StdG, StdB])
+				Clip = '__'.join(Clip.split('_'))
+				clip_name = '__'.join([ProjectID,VideoID,Clip])
+				self.means[clip_name] = np.array([MeanR,MeanG,MeanB])
+				self.vars[clip_name] = np.array([StdR, StdG, StdB])
 
 		# Add videofiles and 
 		for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
