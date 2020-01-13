@@ -28,23 +28,41 @@ class VideoLoader(data.Dataset):
 			for line in input:
 				number,category_short,category_long = line.rstrip().split()
 				self.label_to_number[category_short] = int(number)-1
-		# get the means and standard deviation for the pixels
-		means_file = '/'.join(self.directory.split('/')[:-2])+'/MeansAll.csv'
-		self.means = {}
-		self.vars = {}
-		with open(means_file,'r') as input:
-			for line in input:
-				ProjectID,VideoID,Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
-				Clip = '__'.join(Clip.split('_'))
-				clip_name = '__'.join([ProjectID,VideoID,Clip])
-				self.means[clip_name] = np.array([MeanR,MeanG,MeanB])
-				self.vars[clip_name] = np.array([StdR, StdG, StdB])
+		# # get the means and standard deviation for the pixels
+		# means_file = '/'.join(self.directory.split('/')[:-2])+'/MeansAll_vp.csv'
+		# self.means = {}
+		# self.vars = {}
+		# with open(means_file,'r') as input:
+		# 	for line in input:
+		# 		ProjectID,VideoID,Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
+		# 		Clip = '__'.join(Clip.split('_'))
+		# 		clip_name = '__'.join([ProjectID,VideoID,Clip])
+		# 		self.means[clip_name] = np.array([MeanR,MeanG,MeanB])
+		# 		self.vars[clip_name] = np.array([StdR, StdG, StdB])
 
 		# Add videofiles and 
 		for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
 			for videofile in [x for x in os.listdir(directory +'/'+ label) if '.mp4' in x]:
 				self.labels[videofile] = label
 				self.videofiles.append(directory +'/'+ label+'/'+videofile)
+		# get the means and standard deviation for the pixels
+		means_file = '/'.join(self.directory.split('/')[:-2])+'/MeansAll_vp.csv'
+		with open(means_file,'w') as output:
+			for i in range(10):
+			# for i in range(len(self.videofiles)):
+				video = vp.vread(self.videofiles[i])
+				video = np.transpose(video, (3, 0, 1, 2))
+				means = np.reshape(video, (video.shape[0], -1)).mean(axis=1)
+				stds = np.reshape(video, (video.shape[0], -1)).std(axis=1)
+				means_str = ','.join([str(i) for i in means])
+				stds_str = ','.join([str(i) for i in stds])
+				output.write(','.join([self.videofiles[i],means_str,stds_str]))
+				output.write('\n')
+
+
+
+
+
 
 	def __getitem__(self, index):
 		start = time()
