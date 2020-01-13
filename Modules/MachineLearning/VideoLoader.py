@@ -50,8 +50,9 @@ class VideoLoader(data.Dataset):
 		with open(means_file,'w') as output:
 			output.write(','.join(['Clip','MeanR','MeanG','MeanB','StdR','StdG','StdB']))
 			output.write('\n')
-			for i in range(10):
-			# for i in range(len(self.videofiles)):
+			for i in range(len(self.videofiles)):
+				if i%100 == 0:
+					print(i)
 				video = vp.vread(self.videofiles[i])
 				video = np.transpose(video, (3, 0, 1, 2))
 				means = np.reshape(video, (video.shape[0], -1)).mean(axis=1)
@@ -129,9 +130,9 @@ class VideoLoader(data.Dataset):
 		return len(self.videofiles)
 
 
-pdb.set_trace()
+# pdb.set_trace()
 trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
-trainset.__getitem__(0)
+# trainset.__getitem__(0)
 # for i in range(trainset.__len__()):
 # 	if i == 6125:
 # 		pdb.set_trace()
