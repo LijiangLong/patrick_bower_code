@@ -56,7 +56,7 @@ class VideoLoader(data.Dataset):
 				stds = np.reshape(video, (video.shape[0], -1)).std(axis=1)
 				means_str = ','.join([str(i) for i in means])
 				stds_str = ','.join([str(i) for i in stds])
-				output.write(','.join([self.videofiles[i],means_str,stds_str]))
+				output.write(','.join([self.videofiles[i].split('/')[-1].split('.')[0],means_str,stds_str]))
 				output.write('\n')
 
 
