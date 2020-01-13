@@ -20,13 +20,23 @@ class VideoLoader(data.Dataset):
 		# Directionary and list to hold data
 		self.labels = {} # will hold the labels for each mp4
 		self.videofiles = [] # Holds the location of all the video files
+
+		# Transform labels to numbers
 		label_to_number_file = '/'.join(self.directory.split('/')[:-2])+'/tenClass_v1.txt'
 		self.label_to_number = {}
 		with open(label_to_number_file,'r') as input:
 			for line in input:
 				number,category_short,category_long = line.rstrip().split()
 				self.label_to_number[category_short] = int(number)-1
-
+		# get the means and standard deviation for the pixels
+		means_file = '/'.join(self.directory.split('/')[:-2])+'/MeansAll.csv'
+		self.means = {}
+		self.vars = {}
+		with open(means_file,'r') as input:
+			for line in input:
+				ProjectID,VideoID,Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
+				self.means[Clip] = np.array([MeanR,MeanG,MeanB])
+				self.vars[Clip] = np.array([StdR, StdG, StdB])
 
 		# Add videofiles and 
 		for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
@@ -46,7 +56,6 @@ class VideoLoader(data.Dataset):
 		print('first transpose takes {}'.format(time()-start))
 		start = time()
 
-		#video = np.reshape(video, (video.shape[3], video.shape[0], video.shape[1], video.shape[2])) #(c,t,w,h)
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
 		means = np.reshape(video,(video.shape[0],-1)).mean(axis=1) # r,g,b
@@ -98,7 +107,7 @@ class VideoLoader(data.Dataset):
 		return len(self.videofiles)
 
 
-
+pdb.set_trace()
 trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
 trainset.__getitem__(0)
 # for i in range(trainset.__len__()):
