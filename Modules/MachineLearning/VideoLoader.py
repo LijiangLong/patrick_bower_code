@@ -49,11 +49,8 @@ class VideoLoader(data.Dataset):
 			output.write(','.join(['Clip','MeanR','MeanG','MeanB','StdR','StdG','StdB']))
 			output.write('\n')
 			for i in range(len(self.videofiles)):
-				if i < 6100:
-					continue
-				print(self.videofiles[i])
-				# if i%100 == 0:
-				# 	print(i)
+				if i%100 == 0:
+					print(i)
 				video = vp.vread(self.videofiles[i])
 				video = np.transpose(video, (3, 0, 1, 2))
 				means = np.reshape(video, (video.shape[0], -1)).mean(axis=1)
