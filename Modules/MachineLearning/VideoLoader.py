@@ -34,11 +34,9 @@ class VideoLoader(data.Dataset):
 		# self.vars = {}
 		# with open(means_file,'r') as input:
 		# 	for line in input:
-		# 		ProjectID,VideoID,Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
-		# 		Clip = '__'.join(Clip.split('_'))
-		# 		clip_name = '__'.join([ProjectID,VideoID,Clip])
-		# 		self.means[clip_name] = np.array([MeanR,MeanG,MeanB])
-		# 		self.vars[clip_name] = np.array([StdR, StdG, StdB])
+		# 		Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
+		# 		self.means[Clip] = np.array([MeanR,MeanG,MeanB])
+		# 		self.vars[Clip] = np.array([StdR, StdG, StdB])
 
 		# Add videofiles and 
 		for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
@@ -51,8 +49,11 @@ class VideoLoader(data.Dataset):
 			output.write(','.join(['Clip','MeanR','MeanG','MeanB','StdR','StdG','StdB']))
 			output.write('\n')
 			for i in range(len(self.videofiles)):
-				if i%100 == 0:
-					print(i)
+				if i < 6100:
+					continue
+				print(self.videofiles[i])
+				# if i%100 == 0:
+				# 	print(i)
 				video = vp.vread(self.videofiles[i])
 				video = np.transpose(video, (3, 0, 1, 2))
 				means = np.reshape(video, (video.shape[0], -1)).mean(axis=1)
@@ -82,9 +83,11 @@ class VideoLoader(data.Dataset):
 			
 		# Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
 		means = np.reshape(video,(video.shape[0],-1)).mean(axis=1) # r,g,b
+		means = self.means[self.videofiles[index].split('/')[-1].split('.')[0]]
 		print('mean calculation takes {}'.format(time() - start))
 		start = time()
 		stds = np.reshape(video,(video.shape[0],-1)).std(axis=1) # r,g,b
+		stds = self.vars[self.videofiles[index].split('/')[-1].split('.')[0]]
 		print('std calculation takes {}'.format(time() - start))
 		start = time()
 		
