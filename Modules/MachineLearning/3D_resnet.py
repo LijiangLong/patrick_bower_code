@@ -89,7 +89,7 @@ if args.mode == 'train':
     # model.to(device)
 
     model = model.cuda()
-    #model = nn.DataParallel(model, device_ids=None)
+    model = nn.DataParallel(model, device_ids=None)
     # Load the trainset
 
     trainset = VideoLoader(args.train_dir, 'train', (90,112,112))
