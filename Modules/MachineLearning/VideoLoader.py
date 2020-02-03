@@ -93,7 +93,7 @@ class VideoLoader(data.Dataset):
 
         # Crop the video
         cropped_video = video[:,new_t:new_t + self.output_shape[0], new_x: new_x + self.output_shape[1], new_y: new_y + self.output_shape[2]]
-        Flip the video if training
+#         Flip the video if training
         if random.randint(0,2) == 0 and self.datatype == 'train':
             cropped_video = np.flip(cropped_video, axis = 1)
 #         cropped_video = np.flip(cropped_video, axis=1)
