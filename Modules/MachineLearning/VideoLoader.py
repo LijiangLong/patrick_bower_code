@@ -35,10 +35,10 @@ class VideoLoader(data.Dataset):
         with open(means_file,'r') as input:
             for line in input:
                 Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
-                self.means[Clip] = np.array([MeanR,MeanG,MeanB])
-                self.vars[Clip] = np.array([StdR, StdG, StdB])
+                self.means[Clip] = np.array([MeanR,MeanG,MeanB]).astype('float64')
+                self.vars[Clip] = np.array([StdR, StdG, StdB]).astype('float64')
 
-        # Add videofiles and 
+        # Add videofiles and labels
         for label in [x for x in os.listdir(directory) if os.path.isdir(directory+'/'+x)]:
             for videofile in [x for x in os.listdir(directory +'/'+ label) if '.mp4' in x]:
                 self.labels[videofile] = label
@@ -81,12 +81,10 @@ class VideoLoader(data.Dataset):
             
         # Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
         means = np.reshape(video,(video.shape[0],-1)).mean(axis=1) # r,g,b
-        means = self.means[self.videofiles[index].split('/')[-1].split('.')[0]]
         means_new = self.means[video_name]
         print('mean calculation takes {}'.format(time() - start))
         start = time()
         stds = np.reshape(video,(video.shape[0],-1)).std(axis=1) # r,g,b
-        stds = self.vars[self.videofiles[index].split('/')[-1].split('.')[0]]
         stds_new = self.vars[video_name]
         print('std calculation takes {}'.format(time() - start))
         start = time()
