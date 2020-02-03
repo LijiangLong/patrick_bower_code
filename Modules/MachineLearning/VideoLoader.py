@@ -67,35 +67,20 @@ class VideoLoader(data.Dataset):
 
 
     def __getitem__(self, index):
-        start = time()
 
         # Read in video
         video = vp.vread(self.videofiles[index]) #(t,w,h,c)
         video_name = self.videofiles[index].split('/')[-1].split('.')[0]
-        print('read video takes {}'.format(time()-start))
-        start = time()
-
         video = np.transpose(video,(3,0,1,2)) #(c,t,w,h)
-        print('first transpose takes {}'.format(time()-start))
-        start = time()
-
             
         # Each video is normalized by its mean and standard deviation to account for changes in lighting across the tank
-        means = np.reshape(video,(video.shape[0],-1)).mean(axis=1) # r,g,b
-        means_new = self.means[video_name]
-        print('mean calculation takes {}'.format(time() - start))
-        start = time()
-        stds = np.reshape(video,(video.shape[0],-1)).std(axis=1) # r,g,b
-        stds_new = self.vars[video_name]
-        print('std calculation takes {}'.format(time() - start))
-        start = time()
+        means = self.means[video_name]
+        stds = self.vars[video_name]
         
         # The final video size is smaller than the original video
         t_cut = video.shape[1] - self.output_shape[0] # how many frames to cut out: 30
         x_cut = video.shape[2] - self.output_shape[1] # how many pixels to cut out: 88
         y_cut = video.shape[3] - self.output_shape[2] # how many pixels to cut out: 88
-        print('video normalization takes {}'.format(time()-start))
-        start = time()
         # Determine start and end indices for each dimension depending on datatype
         if self.datatype == 'train':
             new_t = random.randint(0,t_cut)
@@ -108,22 +93,17 @@ class VideoLoader(data.Dataset):
 
         # Crop the video
         cropped_video = video[:,new_t:new_t + self.output_shape[0], new_x: new_x + self.output_shape[1], new_y: new_y + self.output_shape[2]]
-        print('cropping takes {}'.format(time()-start))
-        start = time()
-        # Flip the video if training
-        # if random.randint(0,2) == 0 and self.datatype == 'train':
-        #     cropped_video = np.flip(cropped_video, axis = 1)
-        cropped_video = np.flip(cropped_video, axis=1)
-        print('flip takes {}'.format(time()-start))
-        start = time()
+        Flip the video if training
+        if random.randint(0,2) == 0 and self.datatype == 'train':
+            cropped_video = np.flip(cropped_video, axis = 1)
+#         cropped_video = np.flip(cropped_video, axis=1)
+
 
         # Normalize each channel data
         temp = np.zeros(cropped_video.shape)
         for c in range(3):
             temp[c] = (cropped_video[c] - means[c])/stds[c]
         cropped_video = temp
-        print('normalize each channel takes {}'.format(time()-start))
-        start = time()
         # Return tensor, label, and filename
         filename = self.videofiles[index].split('/')[-1]
         return (torch.from_numpy(cropped_video.copy()), torch.tensor(self.label_to_number[self.labels[filename]]), filename)
@@ -132,9 +112,9 @@ class VideoLoader(data.Dataset):
         return len(self.videofiles)
 
 
-pdb.set_trace()
-trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
-trainset.__getitem__(0)
+# pdb.set_trace()
+# trainset = VideoLoader('/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', 'train', (90,112,112))
+# trainset.__getitem__(0)
 # for i in range(trainset.__len__()):
 #     if i == 6125:
 #         pdb.set_trace()
