@@ -35,9 +35,9 @@ class VideoLoader(data.Dataset):
         with open(means_file,'r') as input:
             for line in input:
                 Clip,MeanR,MeanG,MeanB,StdR,StdG,StdB = line.rstrip().split(',')
-                self.means[Clip] = np.array([MeanR,MeanG,MeanB]).astype('float64')
+                self.means[Clip] = np.array([MeanR,MeanG,MeanB])
                 self.means[Clip] = self.means[Clip].astype('float64')
-                self.vars[Clip] = np.array([StdR, StdG, StdB]).astype('float64')
+                self.vars[Clip] = np.array([StdR, StdG, StdB])
                 self.vars[Clip] = self.vars[Clip].astype('float64')
 
         # Add videofiles and labels
