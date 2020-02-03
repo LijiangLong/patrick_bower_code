@@ -106,9 +106,6 @@ if args.mode == 'train':
     criterion = nn.CrossEntropyLoss()
     criterion = criterion.cuda()
     log_interval = 1
-
-
-    pdb.set_trace()
     for epoch in range(args.epochs):
         model.train()
         start = time()
