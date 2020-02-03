@@ -150,30 +150,30 @@ if args.mode == 'train':
         #     }
         #     torch.save(states, save_file_path)
         # check_accuracy(epoch) # evaluate at the end of epoch
-        model.val()
-        start = time()
-        iteration = 0
-        avg_loss = 0
-        correct = 0
-        for batch_idx, (data, target, path) in enumerate(valset_loader):
-            # target = target.cuda(async = True)
-
-            data = Variable(data)
-            target = Variable(target)
-            output = model(data)
-            loss = criterion(output, target)
-            avg_loss += loss
-
-
-            if iteration % log_interval == 0:
-                print('Val Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                    epoch, batch_idx * len(data), len(trainset_loader.dataset),
-                           100. * batch_idx / len(trainset_loader), loss.item()))
-            iteration += 1
-            pred = output.max(1, keepdim=True)[1]  # get the index of the max log-probability
-            correct += pred.eq(target.view_as(pred)).sum().item()
-
-        end = time()
+#         model.val()
+#         start = time()
+#         iteration = 0
+#         avg_loss = 0
+#         correct = 0
+#         for batch_idx, (data, target, path) in enumerate(valset_loader):
+#             # target = target.cuda(async = True)
+# 
+#             data = Variable(data)
+#             target = Variable(target)
+#             output = model(data)
+#             loss = criterion(output, target)
+#             avg_loss += loss
+# 
+# 
+#             if iteration % log_interval == 0:
+#                 print('Val Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+#                     epoch, batch_idx * len(data), len(trainset_loader.dataset),
+#                            100. * batch_idx / len(trainset_loader), loss.item()))
+#             iteration += 1
+#             pred = output.max(1, keepdim=True)[1]  # get the index of the max log-probability
+#             correct += pred.eq(target.view_as(pred)).sum().item()
+# 
+#         end = time()
 
         # print('Train set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'.format(
         #     avg_loss / len(trainset_loader.dataset), correct, len(trainset_loader.dataset),
