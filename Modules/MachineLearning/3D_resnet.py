@@ -27,10 +27,10 @@ parser.add_argument('--mode', default = 'train', type = str, choices = ['train',
 parser.add_argument('--master_dir', default='/data/home/llong35/Temp/CichlidAnalyzer', type=str,
                     help='path of the master directory')
 
-parser.add_argument('--train_dir', default='__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', type=str,
+parser.add_argument('--train_dir', default='/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/training', type=str,
                     help='path of the training directory. Assumed the directory will contain label/*mp4. Dataset must be training or testing')
 
-parser.add_argument('--val_dir', default='__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/validation', type=str,
+parser.add_argument('--val_dir', default='/data/home/llong35/Temp/CichlidAnalyzer/__AnnotatedData/LabeledVideos/10classLabels/LabeledClips/validation', type=str,
                     help='path of the validation directory. Assumed the directory will contain label/*mp4. Dataset must be training or testing')
 
 parser.add_argument('--results', default='/data/home/llong35/data/12_16_2019', type=str,
